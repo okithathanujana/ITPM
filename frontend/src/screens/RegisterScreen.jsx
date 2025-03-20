@@ -28,10 +28,8 @@ function SignUpPage() {
 
   useEffect(() => {
     if (userInfo) {
-      if (userInfo.userType === "Trainer") {
-        navigate("/trainer-dashboard");
-      } else {
-        navigate("/member-dashboard");
+      if (userInfo.userType === "Member") {
+        navigate("/store");
       }
     }
   }, [navigate, userInfo]);

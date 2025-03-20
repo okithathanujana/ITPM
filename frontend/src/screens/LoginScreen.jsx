@@ -20,11 +20,9 @@ const LoginScreen = () => {
   useEffect(() => {
     if (userInfo) {
       if (userInfo.isAdmin) {
-        navigate('/dashboard');
-      } else if (userInfo.userType === 'Trainer') {
-        navigate('/trainer-dashboard');
+        navigate('/inventory');
       } else if (userInfo.userType === 'Member') {
-        navigate('/member-dashboard');
+        navigate('/store');
       } else {
         navigate('/'); // Fallback or home page if no userType found
       }

@@ -11,30 +11,6 @@ import cors from 'cors';  // Added CORS
 //Inventory - Deshitha
 import itemsRouter from './routes/items.route.js';
 
-//Schedule - Nethula
-import Schedule from './routes/schedule.route.js';
-
-//Progress - Kalish
-import Progress from './routes/order.route.js';
-
-//Promo Package - Dhanga
-import PromoPackage from './routes/Promo.route.js';
-import packageRoutes from './routes/packageRoutes.js';
-
-
-//Feedback - Okitha
-import instructFeedbacksRouter from './routes/Feedback/instructFeedbackRouter.js';
-import packageFeedbackRouter from './routes/Feedback/packageFeedbackRouter.js';
-
-
-//Employee - Pathumi
-import salaryRoute from './routes/Employee/salaryRoutes.js';
-import infoRoute from './routes/Employee/employeeInfoRoutes.js';
-import otRoute from './routes/Employee/overtimeRoutes.js';
-import leaveRoute from './routes/Employee/leaveRoutes.js';
-
-//Supplier - Sajana
-import Supplier from './routes/Supplier/supplier.route.js';
 
 
 
@@ -64,28 +40,6 @@ app.use('/api/users', userRoutes);
 
 //Inventory - Deshitha
 app.use('/api/items', itemsRouter);
-
-//Schedule - Nethula
-app.use('/api/schedule', Schedule);
-
-//Progress - Kalish
-app.use('/api/progress', Progress);
-
-//Promo Package - Dhanga
-app.use('/api/reco', PromoPackage);
-app.use('/api/packages', packageRoutes);
-
-//Feedback - Okitha
-app.use('/api', instructFeedbacksRouter,packageFeedbackRouter);
-
-//Employee - Pathumi
-app.use('/salarys', salaryRoute);
-app.use('/informations',infoRoute);
-app.use('/ot', otRoute);
-app.use('/leave', leaveRoute)
-
-//Supplier - Sajana
-app.use('/api/sup', Supplier);
 
 // Serve static files and handle routing for production
 if (process.env.NODE_ENV === 'production') {

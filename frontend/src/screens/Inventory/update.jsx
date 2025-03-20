@@ -15,7 +15,10 @@ export default function UpdateProduct() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    size: "N/A", // Default placeholder value that will pass validation
+    flavor: "N/A", // Default placeholder value that will pass validation
+  });
   const [publishError, setPublishError] = useState(null);
 
   const { Id } = useParams();
@@ -32,7 +35,12 @@ export default function UpdateProduct() {
         if (res.ok) {
           const selected = data.items.find((item) => item._id === Id);
           if (selected) {
-            setFormData(selected);
+            // Ensure size and flavor are set to placeholder values
+            setFormData({
+              ...selected,
+              size: selected.size || "N/A",
+              flavor: selected.flavor || "N/A",
+            });
           }
         }
       } catch (error) {
@@ -82,12 +90,19 @@ export default function UpdateProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Ensure size and flavor are explicitly set before submission
+      const dataToSubmit = {
+        ...formData,
+        size: formData.size || "N/A",
+        flavor: formData.flavor || "N/A",
+      };
+      
       const res = await fetch(`/api/items/Update/${formData._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -157,32 +172,6 @@ export default function UpdateProduct() {
                 placeholder="Quantity"
                 value={formData.quantity || ""}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-              />
-            </div>
-            <div>
-              <label htmlFor="size" className="sr-only">Size</label>
-              <input
-                id="size"
-                name="size"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                placeholder="Size"
-                value={formData.size || ""}
-                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-              />
-            </div>
-            <div>
-              <label htmlFor="flavor" className="sr-only">Flavor</label>
-              <input
-                id="flavor"
-                name="flavor"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                placeholder="Flavor"
-                value={formData.flavor || ""}
-                onChange={(e) => setFormData({ ...formData, flavor: e.target.value })}
               />
             </div>
             <div>

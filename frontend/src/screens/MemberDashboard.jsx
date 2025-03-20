@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import PackageTimer from '../screens/Packages/components/timer';
-import ShowPackage from '../screens/Packages/components/Showpackages';
 import BMICalc from '../components/BMICalculator';
-import PackagePlans from '../screens/Packages/palan'
 
 const MemberDashboard = () => {
   const [userPackages, setUserPackages] = useState([]);
