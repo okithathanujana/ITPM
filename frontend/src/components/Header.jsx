@@ -51,7 +51,7 @@ const Header = () => {
           onClick={handleNavigation}
           className="text-white text-xl font-semibold focus:outline-none"
         >
-          Aura Fitness
+          Medi Cart
         </button>
         <div className="flex items-center space-x-4">
           {userInfo ? (
@@ -61,7 +61,7 @@ const Header = () => {
                   onClick={() => navigate('/UserOrder')}
                   className="text-white text-sm font-medium"
                 >
-                  Supplier Order
+                  Home
                 </button>
               )}
               {userInfo.isAdmin && (
@@ -85,7 +85,7 @@ const Header = () => {
                   onClick={() => navigate('/store')}
                   className="text-white text-sm font-medium"
                 >
-                  Store
+                  SHOP
                 </button>
               )}
               {userInfo.userType === 'Member' &&  (
