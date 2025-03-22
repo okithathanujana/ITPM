@@ -16,10 +16,13 @@ export default function UpdateProduct() {
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({
-    size: "N/A", // Default placeholder value that will pass validation
-    flavor: "N/A", // Default placeholder value that will pass validation
+    size: "N/A",
+    flavor: "N/A",
+    unitPrice: "", // Per unit price
+    packPrice: "", // Per pack price
   });
   const [publishError, setPublishError] = useState(null);
+  const [priceValidation, setPriceValidation] = useState(null);
 
   const { Id } = useParams();
   const navigate = useNavigate();
@@ -35,11 +38,12 @@ export default function UpdateProduct() {
         if (res.ok) {
           const selected = data.items.find((item) => item._id === Id);
           if (selected) {
-            // Ensure size and flavor are set to placeholder values
             setFormData({
               ...selected,
               size: selected.size || "N/A",
               flavor: selected.flavor || "N/A",
+              unitPrice: selected.unitPrice || "",
+              packPrice: selected.packPrice || "",
             });
           }
         }
@@ -50,7 +54,7 @@ export default function UpdateProduct() {
     fetchProduct();
   }, [Id]);
 
-  const handleUpdloadImage = async () => {
+  const handleUploadImage = async () => {
     try {
       if (!file) {
         setImageUploadError("Please select an image");
@@ -89,14 +93,23 @@ export default function UpdateProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate price fields
+    if (!formData.unitPrice || !formData.packPrice) {
+      setPriceValidation("Please provide prices for both 'Per Unit' and 'Per Pack'.");
+      return;
+    } else if (isNaN(formData.unitPrice) || isNaN(formData.packPrice)) {
+      setPriceValidation("Prices must be valid numbers.");
+      return;
+    }
+    
     try {
-      // Ensure size and flavor are explicitly set before submission
       const dataToSubmit = {
         ...formData,
         size: formData.size || "N/A",
         flavor: formData.flavor || "N/A",
       };
-      
+
       const res = await fetch(`/api/items/Update/${formData._id}`, {
         method: "PUT",
         headers: {
@@ -148,18 +161,34 @@ export default function UpdateProduct() {
               />
             </div>
             <div>
-              <label htmlFor="price" className="sr-only">Price</label>
+              <label htmlFor="unitPrice" className="sr-only">Per Unit Price</label>
               <input
-                id="price"
-                name="price"
+                id="unitPrice"
+                name="unitPrice"
                 type="text"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                placeholder="Price"
-                value={formData.price || ""}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                placeholder="Per Unit Price"
+                value={formData.unitPrice || ""}
+                onChange={(e) => setFormData({ ...formData, unitPrice: e.target.value })}
               />
             </div>
+            <div>
+              <label htmlFor="packPrice" className="sr-only">Per Pack Price</label>
+              <input
+                id="packPrice"
+                name="packPrice"
+                type="text"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                placeholder="Per Pack Price"
+                value={formData.packPrice || ""}
+                onChange={(e) => setFormData({ ...formData, packPrice: e.target.value })}
+              />
+            </div>
+            {priceValidation && (
+              <p className="text-sm text-red-600">{priceValidation}</p>
+            )}
             <div>
               <label htmlFor="quantity" className="sr-only">Quantity</label>
               <input
@@ -204,7 +233,7 @@ export default function UpdateProduct() {
               />
               <button
                 type="button"
-                onClick={handleUpdloadImage}
+                onClick={handleUploadImage}
                 disabled={imageUploadProgress}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
               >

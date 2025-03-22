@@ -3,16 +3,20 @@ import Items from "../models/items.model.js";
 
 // Add new item
 export const Itcreate = async (req, res, next) => {
-  const { ItemsN, price, quantity, image, size, flavor, descrip } = req.body;
+  const { ItemsN, unitPrice, packPrice, quantity, image, descrip } = req.body;
+
+  // Validation: Ensure that all required fields are provided
+  if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   const newItems = new Items({
     ItemsN,
-    price,
+    unitPrice,
+    packPrice,
     quantity,
     image,
-    size,
-    flavor,
-    descrip
+    descrip,
   });
 
   try {
@@ -24,7 +28,7 @@ export const Itcreate = async (req, res, next) => {
   }
 };
 
-//get all items
+// Get all items
 export const getAllItems = async (req, res, next) => {
   try {
     const items = await Items.find();
@@ -32,54 +36,45 @@ export const getAllItems = async (req, res, next) => {
     if (items.length > 0) {
       res.json({ message: "Items details retrieved successfully", items });
     } else {
-      return next(errorHandle(404, " student not fonud "));
+      return next(errorHandle(404, "Items not found"));
     }
   } catch (error) {
     console.log(error.message);
-
     next(error);
   }
 };
 
-
-
-//update 
+// Update item
 export const updateItem = async (req, res, next) => {
- 
+  const { unitPrice, packPrice, quantity, ItemsN, descrip, image } = req.body;
+
+  // Validation for price
+  if (!unitPrice || !packPrice) {
+    return res.status(400).json({ message: "Both unit price and pack price are required" });
+  }
+
   try {
-    const updateequipment = await Items.findByIdAndUpdate(
+    const updatedItem = await Items.findByIdAndUpdate(
       req.params.itemId,
       {
         $set: {
-         
-        
-          ItemsN: req.body.ItemsN,
-          size: req.body.size,
-          flavor: req.body.flavor,
-          descrip: req.body.descrip,
-          price: req.body.price,
-          quantity: req.body.quantity,
-          image: req.body.image,
-          
-        
+          ItemsN,
+          descrip,
+          unitPrice,
+          packPrice,
+          quantity,
+          image,
         },
       },
       { new: true }
     );
-    res.status(200).json(updateequipment);
+    res.status(200).json(updatedItem);
   } catch (error) {
     next(error);
   }
 };
 
-
-
-
-
-
-
-
-//delete 
+// Delete item
 export const deleteItem = async (req, res, next) => {
   try {
     await Items.findByIdAndDelete(req.params.ItemmId);
@@ -89,80 +84,62 @@ export const deleteItem = async (req, res, next) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-//add cart
+// Add to cart
 export const Cartcrete = async (req, res, next) => {
-  const { CurrentuserId, ItemsN, price, quantity, image, } =
-    req.body;
+  const { CurrentuserId, ItemsN, price, quantity, image } = req.body;
 
-  const newItems = new Cart({
+  const newItem = new Cart({
     CurrentuserId,
     ItemsN,
     price,
     quantity,
     image,
-    
   });
+
   try {
-    const savedItems = await newItems.save();
-    res.status(201).json(savedItems);
+    const savedItem = await newItem.save();
+    res.status(201).json(savedItem);
   } catch (error) {
     next(error);
     console.log(error);
   }
 };
 
-// display in the cart
+// Display items in the cart
 export const getCartItem = async (req, res, next) => {
-    try {
-      const { CurrentuserId } = req.params;
-      console.log(CurrentuserId);
-  
-      // Query the database for documents matching CurrentuserId
-      const items = await Cart.find({ CurrentuserId });
-      console.log(items);
-  
-      // Send extracted data as response
-      res.json(items);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
-    }
-  };
+  try {
+    const { CurrentuserId } = req.params;
 
-//romove 1 items in the cart
+    // Query the database for documents matching CurrentuserId
+    const items = await Cart.find({ CurrentuserId });
+    res.json(items);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Remove one item from the cart
 export const deleteItems = async (req, res, next) => {
-    try {
-      await Cart.findByIdAndDelete(req.params.itemsId);
-      res.status(200).json("The post has been deleted");
-    } catch (error) {
-      next(error);
-    }
-  };
+  try {
+    await Cart.findByIdAndDelete(req.params.itemsId);
+    res.status(200).json("The post has been deleted");
+  } catch (error) {
+    next(error);
+  }
+};
 
-  // clear the cart
+// Clear the cart
 export const deleteItemss = async (req, res, next) => {
-    try {
-      const { CurrentuserId } = req.params;
-  
-      // Delete items associated with the specified CurrentUserId
-      await Cart.deleteMany({ CurrentuserId });
-  
-      res.status(200).json({ message: "Items have been deleted successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
-    }
-  };
+  try {
+    const { CurrentuserId } = req.params;
 
+    // Delete items associated with the specified CurrentUserId
+    await Cart.deleteMany({ CurrentuserId });
 
-
-
+    res.status(200).json({ message: "Items have been deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

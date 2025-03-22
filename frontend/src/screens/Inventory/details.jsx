@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 export default function Details() {
   const [formData, setFormData] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [priceOption, setPriceOption] = useState("unit"); // Added priceOption state
   const { userInfo: currentUser } = useSelector((state) => state.auth);
   const { itemId } = useParams();
 
@@ -36,6 +37,7 @@ export default function Details() {
   };
 
   const handleAddToCart = async () => {
+    const selectedPrice = priceOption === "unit" ? formData.unitPrice : formData.packPrice;
     try {
       const response = await fetch('/api/items/Ccreate', {
         method: 'POST',
@@ -46,7 +48,7 @@ export default function Details() {
           CurrentuserId: currentUser._id,
           ItemsN: formData.ItemsN,
           quantity,
-          price: formData.price,
+          price: selectedPrice,
           image: formData.image,
         }),
       });
@@ -61,18 +63,16 @@ export default function Details() {
   // Function to split description into points
   const renderDescriptionPoints = () => {
     if (!formData.descrip) return null;
-    
-    // Split by periods, commas, or line breaks
+
     const points = formData.descrip
       .split(/[.;\n]/)
       .map(point => point.trim())
       .filter(point => point.length > 0);
-    
-    // If there are no points or only one, display as regular paragraph
+
     if (points.length <= 1) {
       return <p className="mt-4 text-gray-600 font-serif">{formData.descrip}</p>;
     }
-    
+
     return (
       <div className="mt-4">
         <h3 className="text-lg font-medium text-gray-700 font-serif mb-2">Description:</h3>
@@ -105,13 +105,37 @@ export default function Details() {
               <img className="h-96 w-full object-cover md:w-96" src={formData.image} alt={formData.ItemsN} />
             </div>
             <div className="p-8">
-             
               <h2 className="mt-2 text-3xl leading-8 font-semibold font-serif text-gray-900">{formData.ItemsN}</h2>
-              <p className="mt-2 text-xl text-yellow-600 font-mono">Rs {formData.price}</p>
-              
-              {/* Replace the single paragraph with point-by-point description */}
+              <p className="mt-2 text-xl text-yellow-600 font-mono">Rs: {priceOption === "unit" ? formData.unitPrice : formData.packPrice}</p>
+
+              {/* Price option radio buttons */}
+              <div className="mt-4">
+                <label className="text-gray-700 font-serif mr-4">Order In:</label>
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="unit"
+                    checked={priceOption === "unit"}
+                    onChange={() => setPriceOption("unit")}
+                  /> 
+                  LKR {formData.unitPrice} Per unit
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="pack"
+                    checked={priceOption === "pack"}
+                    onChange={() => setPriceOption("pack")}
+                  />
+                  LKR {formData.packPrice} Per pack
+                </label>
+              </div>
+
               {renderDescriptionPoints()}
-              
+
               <div className="mt-6 flex items-center">
                 <span className="mr-3 text-gray-700 font-serif">Quantity:</span>
                 <div className="flex items-center border border-gray-300 rounded-md">

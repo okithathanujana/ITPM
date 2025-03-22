@@ -16,15 +16,19 @@ export default function CreatePost() {
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({
-    size: "N/A", // Default placeholder value that will pass validation
-    flavor: "N/A", // Default placeholder value that will pass validation
+    ItemsN: "", // Product name
+    unitPrice: "", // Per unit price
+    packPrice: "", // Per pack price
+    quantity: "", // Quantity
+    image: "", // Product image
+    descrip: "", // Description
   });
   const [publishError, setPublishError] = useState(null);
-  const [Cvalidation, setCValidation] = useState(null);
+  const [validationError, setValidationError] = useState(null);
 
   const navigate = useNavigate();
 
-  const handleUpdloadImage = async () => {
+  const handleUploadImage = async () => {
     try {
       if (!file) {
         setImageUploadError("Please select an image");
@@ -63,12 +67,17 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation: Check if any required field is empty
+    const { ItemsN, unitPrice, packPrice, quantity, image, descrip } = formData;
+    if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip) {
+      setValidationError("All fields are required");
+      return;
+    }
+
     try {
-      // Ensure size and flavor are explicitly set before submission
       const dataToSubmit = {
         ...formData,
-        size: formData.size || "N/A",
-        flavor: formData.flavor || "N/A",
       };
 
       const res = await fetch("/api/items/create", {
@@ -91,25 +100,6 @@ export default function CreatePost() {
       }
     } catch (error) {
       setPublishError("Something went wrong");
-    }
-  };
-
-  const handlepriceChange = (e) => {
-    const price = e.target.value.trim();
-    const pricePattern = /^[1-9]\d*$/; // Pattern for positive integers 
-
-    // Validation of price
-    if (price === "") {
-      setCValidation(null);
-    } else if (!pricePattern.test(price)) {
-      if (isNaN(price)) {
-        setCValidation("Price must be a number");
-      } else {
-        setCValidation("Price must be a positive integer");
-      }
-    } else {
-      setFormData({ ...formData, price });
-      setCValidation(null);
     }
   };
 
@@ -136,21 +126,43 @@ export default function CreatePost() {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
                 placeholder="Product Name"
+                value={formData.ItemsN}
                 onChange={(e) => setFormData({ ...formData, ItemsN: e.target.value })}
               />
             </div>
+
+            {/* Per Unit Price */}
             <div>
-              <label htmlFor="price" className="sr-only">Price</label>
+              <label htmlFor="unitPrice" className="sr-only">Per Unit Price</label>
               <input
-                id="price"
-                name="price"
-                type="text"
+                id="unitPrice"
+                name="unitPrice"
+                type="number"
+                min="0"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                placeholder="Price"
-                onChange={handlepriceChange}
+                placeholder="Per Unit Price"
+                value={formData.unitPrice}
+                onChange={(e) => setFormData({ ...formData, unitPrice: e.target.value })}
               />
             </div>
+
+            {/* Per Pack Price */}
+            <div>
+              <label htmlFor="packPrice" className="sr-only">Per Pack Price</label>
+              <input
+                id="packPrice"
+                name="packPrice"
+                type="number"
+                min="0"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                placeholder="Per Pack Price"
+                value={formData.packPrice}
+                onChange={(e) => setFormData({ ...formData, packPrice: e.target.value })}
+              />
+            </div>
+
             <div>
               <label htmlFor="quantity" className="sr-only">Quantity</label>
               <input
@@ -161,9 +173,11 @@ export default function CreatePost() {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
                 placeholder="Quantity"
+                value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               />
             </div>
+
             <div>
               <label htmlFor="description" className="sr-only">Description</label>
               <textarea
@@ -173,6 +187,7 @@ export default function CreatePost() {
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
                 placeholder="Description"
                 rows="3"
+                value={formData.descrip}
                 onChange={(e) => setFormData({ ...formData, descrip: e.target.value })}
               ></textarea>
             </div>
@@ -193,7 +208,7 @@ export default function CreatePost() {
               />
               <button
                 type="button"
-                onClick={handleUpdloadImage}
+                onClick={handleUploadImage}
                 disabled={imageUploadProgress}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
               >
@@ -225,8 +240,8 @@ export default function CreatePost() {
             )}
           </div>
 
-          {Cvalidation && (
-            <p className="mt-2 text-sm text-red-600">{Cvalidation}</p>
+          {validationError && (
+            <p className="mt-2 text-sm text-red-600">{validationError}</p>
           )}
 
           <div>

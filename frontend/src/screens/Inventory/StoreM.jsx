@@ -26,12 +26,12 @@ const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) =>
           <img src={product.image} alt={product.ItemsN} className="w-16 h-16 object-cover rounded-md" />
           <div>
             <h3 className="text-lg font-semibold text-gray-800">{product.ItemsN}</h3>
-            <p className="text-sm text-gray-600">Flavor: {product.flavor}</p>
+        
           </div>
         </div>
         <div className="flex items-center space-x-4">
           <p className="text-sm text-gray-600">Quantity: {product.quantity}</p>
-          <p className="text-lg font-bold text-yellow-600">Rs.{product.price}</p>
+          
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(product._id)}
