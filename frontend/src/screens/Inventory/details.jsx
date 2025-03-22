@@ -58,6 +58,33 @@ export default function Details() {
     }
   };
 
+  // Function to split description into points
+  const renderDescriptionPoints = () => {
+    if (!formData.descrip) return null;
+    
+    // Split by periods, commas, or line breaks
+    const points = formData.descrip
+      .split(/[.;\n]/)
+      .map(point => point.trim())
+      .filter(point => point.length > 0);
+    
+    // If there are no points or only one, display as regular paragraph
+    if (points.length <= 1) {
+      return <p className="mt-4 text-gray-600 font-serif">{formData.descrip}</p>;
+    }
+    
+    return (
+      <div className="mt-4">
+        <h3 className="text-lg font-medium text-gray-700 font-serif mb-2">Description:</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          {points.map((point, index) => (
+            <li key={index} className="text-gray-600 font-serif">{point}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -78,18 +105,13 @@ export default function Details() {
               <img className="h-96 w-full object-cover md:w-96" src={formData.image} alt={formData.ItemsN} />
             </div>
             <div className="p-8">
-              <div className="uppercase tracking-wide text-sm text-yellow-500 font-semibold">{formData.flavor}</div>
+             
               <h2 className="mt-2 text-3xl leading-8 font-semibold font-serif text-gray-900">{formData.ItemsN}</h2>
               <p className="mt-2 text-xl text-yellow-600 font-mono">Rs {formData.price}</p>
-              <p className="mt-4 text-gray-600 font-serif">{formData.descrip}</p>
               
-              <div className="mt-6 flex items-center">
-                <span className="mr-3 text-gray-700 font-serif">Size:</span>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold">
-                  {formData.size}
-                </span>
-              </div>
-
+              {/* Replace the single paragraph with point-by-point description */}
+              {renderDescriptionPoints()}
+              
               <div className="mt-6 flex items-center">
                 <span className="mr-3 text-gray-700 font-serif">Quantity:</span>
                 <div className="flex items-center border border-gray-300 rounded-md">
