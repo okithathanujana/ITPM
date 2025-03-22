@@ -69,7 +69,9 @@ const Header = () => {
                   onClick={() => navigate('/dashboard')}
                   className="text-white text-sm font-medium"
                 >
-                  Admin Panel
+                
+                
+
                 </button>
               )}
               {userInfo.userType === 'Member' &&  (
@@ -77,7 +79,7 @@ const Header = () => {
                   onClick={() => navigate('/feedback')}
                   className="text-white text-sm font-medium"
                 >
-                  Feedback
+                .
                 </button>
               )}
               {userInfo.userType === 'Member' &&  (
@@ -85,7 +87,7 @@ const Header = () => {
                   onClick={() => navigate('/store')}
                   className="text-white text-sm font-medium"
                 >
-                  SHOP
+                  Shop
                 </button>
               )}
               {userInfo.userType === 'Member' &&  (
@@ -93,7 +95,7 @@ const Header = () => {
                   onClick={() => navigate('/myschedule')}
                   className="text-white text-sm font-medium"
                 >
-                  My Schedule
+                 .
                 </button>
               )}
               {userInfo.userType === 'Member' &&  (
@@ -101,7 +103,7 @@ const Header = () => {
                   onClick={() => navigate('/pdisplay')}
                   className="text-white text-sm font-medium"
                 >
-                  My Progress
+                  .
                 </button>
               )}
               <div className="relative">
