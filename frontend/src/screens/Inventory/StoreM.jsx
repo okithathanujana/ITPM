@@ -26,11 +26,11 @@ const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) =>
           <img src={product.image} alt={product.ItemsN} className="w-16 h-16 object-cover rounded-md" />
           <div>
             <h3 className="text-lg font-semibold text-gray-800">{product.ItemsN}</h3>
-        
           </div>
         </div>
         <div className="flex items-center space-x-4">
           <p className="text-sm text-gray-600">Quantity: {product.quantity}</p>
+          <p className="text-sm text-gray-600">Price: Rs.{product.price}</p>
           
           <div className="flex space-x-2">
             <button
@@ -131,68 +131,131 @@ export default function StoreM() {
     }));
   };
 
+  // Calculate per unit price for a product
+  const calculatePerUnitPrice = (product) => {
+    const packPrice = parseFloat(product.price);
+    const quantity = parseInt(product.quantity);
+    if (quantity <= 0) return 0;
+    const unitPrice = packPrice / quantity;
+    return unitPrice.toFixed(2);
+  };
+
   const generatePDF = () => {
-    const selectedProducts = Info.filter(product => selectedItems[product._id]);
-    if (selectedProducts.length === 0) {
-      alert("No products selected for the report.");
+    // Generate report for all existing products
+    if (Info.length === 0) {
+      alert("No products available for the report.");
       return;
     }
 
     const doc = new jsPDF();
-    const today = new Date().toLocaleDateString();
-    doc.setFontSize(18);
-    doc.text("Product Report", 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Date: ${today}`, 14, 32);
     
+    // Add header
+    const today = new Date().toLocaleDateString();
+    doc.setFontSize(20);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Product Inventory Report", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.text(`Generated: ${today}`, doc.internal.pageSize.getWidth() / 2, 30, { align: "center" });
+    
+    doc.setLineWidth(0.5);
+    doc.line(20, 35, doc.internal.pageSize.getWidth() - 20, 35);
+
+    // Company info
+    doc.setFontSize(12);
+    doc.text("Your Company Name", 20, 45);
+    doc.setFontSize(10);
+    doc.text("Contact: +123-456-7890", 20, 52);
+    doc.text("Email: info@yourcompany.com", 20, 58);
+    
+    // Define table columns
     const columns = [
-      { title: "Name", dataKey: "name" },
-      { title: "Flavor", dataKey: "flavor" },
+      { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
-      { title: "Price", dataKey: "price" },
+      { title: "Pack Price (Rs)", dataKey: "packPrice" },
+      { title: "Unit Price (Rs)", dataKey: "unitPrice" },
     ];
 
     let totalQuantity = 0;
-    let totalPrice = 0;
-    const data = selectedProducts.map((product) => {
-      totalQuantity += parseInt(product.quantity);
-      totalPrice += parseFloat(product.price);
+    let totalPackPrice = 0;
+    
+    // Prepare data for table
+    const data = Info.map((product) => {
+      const packPrice = parseFloat(product.price) || 0;
+      const quantity = parseInt(product.quantity) || 0;
+      const unitPrice = calculatePerUnitPrice(product);
+      
+      totalQuantity += quantity;
+      totalPackPrice += packPrice;
+      
       return {
-        name: product.ItemsN,
-        flavor: product.flavor,
-        quantity: product.quantity,
-        price: product.price,
+        name: product.ItemsN || "Unnamed Product",
+        quantity: quantity.toString(),
+        packPrice: packPrice.toFixed(2),
+        unitPrice: unitPrice,
       };
     });
 
+    // Add total row
     data.push({
-      name: "",
-      flavor: "Total",
+      name: "TOTAL",
       quantity: totalQuantity.toString(),
-      price: totalPrice.toFixed(2),
+      packPrice: totalPackPrice.toFixed(2),
+      unitPrice: "",
     });
 
+    // Generate table
     doc.autoTable({
-      startY: 40,
+      startY: 65,
       columns: columns,
       body: data,
-      styles: { cellPadding: 1, fontSize: 10, lineHeight: 1.2, overflow: "linebreak" },
-      headStyles: { fillColor: [255, 193, 7], textColor: [0, 0, 0], fontStyle: "bold" },
-      columnStyles: { 
-        0: { halign: "left" }, 
-        1: { halign: "left" }, 
-        2: { halign: "left" }, 
-        3: { halign: "left" } 
+      margin: { top: 65, right: 20, bottom: 20, left: 20 },
+      styles: { 
+        fontSize: 10, 
+        cellPadding: 3,
+        lineColor: [200, 200, 200],
+        lineWidth: 0.1
       },
-      didParseCell: function (data) {
+      headStyles: { 
+        fillColor: [255, 193, 7], 
+        textColor: [0, 0, 0], 
+        fontStyle: "bold",
+        halign: "center"
+      },
+      alternateRowStyles: { fillColor: [252, 248, 232] },
+      columnStyles: { 
+        0: { cellWidth: 80, halign: "left" }, 
+        1: { cellWidth: 30, halign: "center" }, 
+        2: { cellWidth: 40, halign: "right" }, 
+        3: { cellWidth: 40, halign: "right" } 
+      },
+      didParseCell: function(data) {
         if (data.row.index === data.table.body.length - 1) {
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.fillColor = [255, 255, 200];
+          data.cell.styles.textColor = [0, 0, 0];
         }
       },
+      didDrawPage: function(data) {
+        // Footer
+        const pageHeight = doc.internal.pageSize.getHeight();
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(
+          `Page ${data.pageNumber} of ${doc.getNumberOfPages()}`,
+          data.settings.margin.left,
+          pageHeight - 10
+        );
+        doc.text(
+          "Generated by Inventory System",
+          doc.internal.pageSize.getWidth() / 2,
+          pageHeight - 10,
+          { align: "center" }
+        );
+      }
     });
     
-    doc.save("productReport.pdf");
+    doc.save("ProductInventoryReport.pdf");
   };
 
   const generateReorderPDF = () => {
@@ -202,60 +265,123 @@ export default function StoreM() {
     }
 
     const doc = new jsPDF();
-    const today = new Date().toLocaleDateString();
-    doc.setFontSize(18);
-    doc.text("Reorder Report", 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Date: ${today}`, 14, 32);
     
+    // Add header
+    const today = new Date().toLocaleDateString();
+    doc.setFontSize(20);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Reorder List Report", doc.internal.pageSize.getWidth() / 2, 20, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.text(`Generated: ${today}`, doc.internal.pageSize.getWidth() / 2, 30, { align: "center" });
+    
+    doc.setLineWidth(0.5);
+    doc.line(20, 35, doc.internal.pageSize.getWidth() - 20, 35);
+
+    // Company info
+    doc.setFontSize(12);
+    doc.text("Your Company Name", 20, 45);
+    doc.setFontSize(10);
+    doc.text("Contact: +123-456-7890", 20, 52);
+    doc.text("Email: info@yourcompany.com", 20, 58);
+    
+    // Define table columns
     const columns = [
-      { title: "Name", dataKey: "name" },
-      { title: "Flavor", dataKey: "flavor" },
+      { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
-      { title: "Price", dataKey: "price" },
+      { title: "Pack Price (Rs)", dataKey: "packPrice" },
+      { title: "Unit Price (Rs)", dataKey: "unitPrice" },
     ];
 
     let totalQuantity = 0;
-    let totalPrice = 0;
+    let totalPackPrice = 0;
+    
+    // Prepare data for table
     const data = reorderList.map((product) => {
-      totalQuantity += parseInt(product.quantity);
-      totalPrice += parseFloat(product.price);
+      const packPrice = parseFloat(product.price) || 0;
+      const quantity = parseInt(product.quantity) || 0;
+      const unitPrice = calculatePerUnitPrice(product);
+      
+      totalQuantity += quantity;
+      totalPackPrice += packPrice;
+      
       return {
-        name: product.ItemsN,
-        flavor: product.flavor,
-        quantity: product.quantity,
-        price: product.price,
+        name: product.ItemsN || "Unnamed Product",
+        quantity: quantity.toString(),
+        packPrice: packPrice.toFixed(2),
+        unitPrice: unitPrice,
       };
     });
 
+    // Add total row
     data.push({
-      name: "",
-      flavor: "Total",
+      name: "TOTAL",
       quantity: totalQuantity.toString(),
-      price: totalPrice.toFixed(2),
+      packPrice: totalPackPrice.toFixed(2),
+      unitPrice: "",
     });
 
+    // Generate table
     doc.autoTable({
-      startY: 40,
+      startY: 65,
       columns: columns,
       body: data,
-      styles: { cellPadding: 1, fontSize: 10, lineHeight: 1.2, overflow: "linebreak" },
-      headStyles: { fillColor: [255, 193, 7], textColor: [0, 0, 0], fontStyle: "bold" },
-      columnStyles: { 
-        0: { halign: "left" }, 
-        1: { halign: "left" }, 
-        2: { halign: "left" }, 
-        3: { halign: "left" } 
+      margin: { top: 65, right: 20, bottom: 20, left: 20 },
+      styles: { 
+        fontSize: 10, 
+        cellPadding: 3,
+        lineColor: [200, 200, 200],
+        lineWidth: 0.1
       },
-      didParseCell: function (data) {
+      headStyles: { 
+        fillColor: [86, 130, 255], 
+        textColor: [255, 255, 255], 
+        fontStyle: "bold",
+        halign: "center"
+      },
+      alternateRowStyles: { fillColor: [240, 245, 255] },
+      columnStyles: { 
+        0: { cellWidth: 80, halign: "left" }, 
+        1: { cellWidth: 30, halign: "center" }, 
+        2: { cellWidth: 40, halign: "right" }, 
+        3: { cellWidth: 40, halign: "right" } 
+      },
+      didParseCell: function(data) {
         if (data.row.index === data.table.body.length - 1) {
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [255, 255, 200];
+          data.cell.styles.fillColor = [200, 220, 255];
+          data.cell.styles.textColor = [0, 0, 0];
         }
       },
+      didDrawPage: function(data) {
+        // Footer
+        const pageHeight = doc.internal.pageSize.getHeight();
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(
+          `Page ${data.pageNumber} of ${doc.getNumberOfPages()}`,
+          data.settings.margin.left,
+          pageHeight - 10
+        );
+        doc.text(
+          "Generated by Inventory System",
+          doc.internal.pageSize.getWidth() / 2,
+          pageHeight - 10,
+          { align: "center" }
+        );
+      }
     });
     
-    doc.save("reorderReport.pdf");
+    // Add signature section
+    const finalY = doc.lastAutoTable.finalY + 10;
+    doc.setFontSize(10);
+    doc.text("Approved By: ____________________", 20, finalY + 20);
+    doc.text("Date: ____________________", 20, finalY + 30);
+    
+    doc.text("Received By: ____________________", doc.internal.pageSize.getWidth() - 20, finalY + 20, { align: "right" });
+    doc.text("Date: ____________________", doc.internal.pageSize.getWidth() - 20, finalY + 30, { align: "right" });
+    
+    doc.save("ReorderReport.pdf");
   };
 
   const handleSelectAll = (event) => {
@@ -310,21 +436,6 @@ export default function StoreM() {
     }
     // Implement the actual API call to process reorder
     try {
-      // Example API call
-      /*
-      const res = await fetch('/api/reorder/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ items: reorderList })
-      });
-      if (res.ok) {
-        // Handle success
-      } else {
-        // Handle error
-      }
-      */
       console.log("Processing reorder for:", reorderList);
       alert("Reorder processed successfully!");
       clearReorderList();
@@ -341,7 +452,7 @@ export default function StoreM() {
     <div className="min-h-screen bg-yellow-50">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-center text-4xl font-bold mb-8 text-yellow-600">
-          Inventory Management
+          Product Management
         </h1>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-4 md:space-y-0">
@@ -381,6 +492,11 @@ export default function StoreM() {
             >
               <EyeIcon size={18} className="mr-2" />
               View Reorder List
+              {reorderList.length > 0 && (
+                <span className="ml-1 bg-white text-blue-600 text-xs font-bold px-2 py-1 rounded-full">
+                  {reorderList.length}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -435,28 +551,66 @@ export default function StoreM() {
               </div>
               <div className="p-4">
                 {reorderList.length > 0 ? (
-                  <ul className="divide-y divide-yellow-200">
-                    {reorderList.map((item) => (
-                      <li key={item._id} className="p-4 flex justify-between items-center">
-                        <div>
-                          <h3 className="text-lg font-semibold">{item.ItemsN}</h3>
-                          <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                          <p className="text-lg font-bold text-yellow-600">Rs.{item.price}</p>
-                          <button
-                            onClick={() => removeFromReorderList(item._id)}
-                            className="p-2 text-red-600 hover:text-red-800 transition-colors duration-150"
-                            title="Remove from Reorder List"
-                          >
-                            <XIcon size={18} />
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <div>
+                    <div className="mb-4 bg-blue-50 p-3 rounded-md text-blue-800 text-sm">
+                      {reorderList.length} item(s) in reorder list. Total value: Rs.{
+                        reorderList.reduce((sum, item) => sum + parseFloat(item.price || 0), 0).toFixed(2)
+                      }
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Pack Price</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {reorderList.map((item) => (
+                            <tr key={item._id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm font-medium text-gray-900">{item.ItemsN}</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-center">
+                                <div className="text-sm text-gray-500">{item.quantity}</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right">
+                                <div className="text-sm text-gray-900">Rs.{parseFloat(item.price).toFixed(2)}</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right">
+                                <div className="text-sm text-gray-900">Rs.{calculatePerUnitPrice(item)}</div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button
+                                  onClick={() => removeFromReorderList(item._id)}
+                                  className="text-red-600 hover:text-red-900 focus:outline-none"
+                                >
+                                  <XIcon size={18} />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot className="bg-gray-50">
+                          <tr>
+                            <td className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Total</td>
+                            <td className="px-6 py-3 text-center text-sm font-semibold text-gray-900">
+                              {reorderList.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0)}
+                            </td>
+                            <td className="px-6 py-3 text-right text-sm font-semibold text-gray-900">
+                              Rs.{reorderList.reduce((sum, item) => sum + parseFloat(item.price || 0), 0).toFixed(2)}
+                            </td>
+                            <td colSpan="2"></td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
                 ) : (
-                  <p className="text-center text-gray-500">No items in the reorder list.</p>
+                  <p className="text-center text-gray-500 py-6">No items in the reorder list.</p>
                 )}
               </div>
               <div className="p-4 border-t border-yellow-200 flex justify-end space-x-4">
