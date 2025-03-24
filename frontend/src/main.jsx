@@ -7,7 +7,7 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import "./index.css"; // Ensure Tailwind CSS is imported here
+import "./index.css"; 
 import store from "./store";
 import { Provider } from "react-redux";
 import HomeScreen from "./screens/HomeScreen";
@@ -34,9 +34,6 @@ import AddInventory from "./screens/Inventory/Addnewproduct.jsx";
 import UpdateItem from "./screens/Inventory/update.jsx";
 import Details from "./screens/Inventory/details.jsx";
 
-
-
-// Create the router with routes
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -49,27 +46,27 @@ const router = createBrowserRouter(
       <Route path="/users/delete/:id" element={<DeleteUser />} />
       <Route path="/users/view/:id" element={<ShowUser />} />
       <Route path="/users/create" element={<CreateUser />} />
+      
+      {/* Protected Routes */}
       <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/trainer-dashboard" element={<TrainerDashboard />} />
-        <Route path="/store" element={<Store />} />
+        <Route path="/member-dashboard" element={<MemberDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/inventory" element={<Inventory />} />
+        <Route path="/add-inventory" element={<AddInventory />} />
+        <Route path="/update/:Id" element={<UpdateItem />} />
       </Route>
 
-      {/* Inventory - Deshitha */}
+      {/* Public Inventory Routes */}
       <Route path="/store" element={<Store />} />
       <Route path="/cart" element={<Cart />} />
-      <Route path="/inventory" element={<Inventory />} />
-      <Route path="/add-inventory" element={<AddInventory />} />
-      <Route path="/update/:Id" element={<UpdateItem />} />
       <Route path="/details/:itemId" element={<Details />} />
-
     </Route>
   )
 );
 
-// Render the app with Redux provider and RouterProvider
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <React.StrictMode>

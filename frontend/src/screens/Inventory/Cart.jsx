@@ -63,22 +63,22 @@ const Cart = () => {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <Link to="/store" className="flex items-center text-yellow-600 hover:text-yellow-700 transition-colors duration-200">
+          <Link to="/store" className="flex items-center text-blue-600 hover:text-blue-700 transition-colors duration-200">
             <FaArrowLeft className="mr-2" />
             <span className="font-serif">Back to Store</span>
           </Link>
-          <h1 className="text-3xl font-bold text-yellow-600 font-serif">Your Cart</h1>
+          <h1 className="text-3xl font-bold text-blue-600 font-serif">Your Cart</h1>
         </div>
 
         {info.length > 0 ? (
           <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-yellow-50">
+              <thead className="bg-blue-50">
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-600 uppercase tracking-wider">Product</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-600 uppercase tracking-wider">Quantity</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-600 uppercase tracking-wider">Price</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-yellow-600 uppercase tracking-wider">Action</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Product</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Quantity</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Price</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-blue-600 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -115,9 +115,9 @@ const Cart = () => {
           </div>
         ) : (
           <div className="bg-white shadow-md rounded-lg p-8 text-center mb-8">
-            <FaShoppingCart className="mx-auto text-6xl text-yellow-500 mb-4" />
+            <FaShoppingCart className="mx-auto text-6xl text-blue-600 mb-4" />
             <p className="text-2xl font-serif text-gray-600 mb-4">Your cart is empty</p>
-            <Link to="/store" className="inline-block bg-yellow-500 text-white px-6 py-2 rounded-full hover:bg-yellow-600 transition-colors duration-200">
+            <Link to="/store" className="inline-block bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200">
               Continue Shopping
             </Link>
           </div>
@@ -127,9 +127,9 @@ const Cart = () => {
           <div className="bg-white shadow-md rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
               <span className="text-2xl font-serif text-gray-800">Total</span>
-              <span className="text-2xl font-bold text-yellow-600">RS.{totalPrice}</span>
+              <span className="text-2xl font-bold text-blue-600">RS.{totalPrice}</span>
             </div>
-            <button className="w-full bg-yellow-500 text-white py-3 px-4 rounded-full hover:bg-yellow-600 transition-colors duration-200 font-serif uppercase">
+            <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200 font-serif uppercase">
               Proceed to Checkout
             </button>
           </div>

@@ -1,6 +1,5 @@
 import Cart from "../models/cart.mode.js";
 import Items from "../models/items.model.js";
-import Items from "../models/items.model.js";
 
 // Add new item
 export const Itcreate = async (req, res, next) => {
@@ -11,29 +10,21 @@ export const Itcreate = async (req, res, next) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  // Ensure that the dates are valid Date objects
-  const formattedManufactureDate = new Date(manufactureDate);
-  const formattedExpiryDate = new Date(expiryDate);
-
-  if (isNaN(formattedManufactureDate.getTime()) || isNaN(formattedExpiryDate.getTime())) {
-    return res.status(400).json({ message: "Invalid date format" });
-  }
-
-  // Create new item with valid dates
-  const newItems = new Items({
-    ItemsN,
-    unitPrice,
-    packPrice,
-    quantity,
-    image,
-    descrip,
-    manufactureDate: formattedManufactureDate,
-    expiryDate: formattedExpiryDate,
-   
-  });
-  
-
   try {
+    // Create new item with dates
+    const newItems = new Items({
+      ItemsN,
+      unitPrice,
+      packPrice,
+      quantity,
+      image,
+      descrip,
+      manufactureDate: new Date(manufactureDate),
+      expiryDate: new Date(expiryDate),
+      size: req.body.size || "N/A",
+      flavor: req.body.flavor || "N/A"
+    });
+
     const savedItems = await newItems.save();
     res.status(201).json(savedItems);
   } catch (error) {
@@ -45,10 +36,17 @@ export const Itcreate = async (req, res, next) => {
 // Get all items
 export const getAllItems = async (req, res, next) => {
   try {
-    const items = await Items.find();
+    const items = await Items.find().lean();
 
-    if (items.length > 0) {
-      res.json({ message: "Items details retrieved successfully", items });
+    // Format dates for each item
+    const formattedItems = items.map(item => ({
+      ...item,
+      manufactureDate: item.manufactureDate ? item.manufactureDate.toISOString() : null,
+      expiryDate: item.expiryDate ? item.expiryDate.toISOString() : null
+    }));
+
+    if (formattedItems.length > 0) {
+      res.json({ message: "Items details retrieved successfully", items: formattedItems });
     } else {
       return next(errorHandle(404, "Items not found"));
     }
@@ -67,14 +65,6 @@ export const updateItem = async (req, res, next) => {
     return res.status(400).json({ message: "Both unit price and pack price are required" });
   }
 
-  // Ensure that the dates are valid Date objects
-  const formattedManufactureDate = new Date(manufactureDate);
-  const formattedExpiryDate = new Date(expiryDate);
-
-  if (isNaN(formattedManufactureDate.getTime()) || isNaN(formattedExpiryDate.getTime())) {
-    return res.status(400).json({ message: "Invalid date format" });
-  }
-
   try {
     const updateItem = await Items.findByIdAndUpdate(
       req.params.itemId,
@@ -86,9 +76,10 @@ export const updateItem = async (req, res, next) => {
           packPrice,
           quantity,
           image,
-          manufactureDate: formattedManufactureDate,
-          expiryDate: formattedExpiryDate,
-          
+          manufactureDate: manufactureDate ? new Date(manufactureDate) : null,
+          expiryDate: expiryDate ? new Date(expiryDate) : null,
+          size: req.body.size || "N/A",
+          flavor: req.body.flavor || "N/A"
         },
       },
       { new: true }
@@ -113,20 +104,25 @@ export const deleteItem = async (req, res, next) => {
 export const Cartcrete = async (req, res, next) => {
   const { CurrentuserId, ItemsN, price, quantity, image } = req.body;
 
-  const newItems = new Cart({
-    CurrentuserId,
-    ItemsN,
-    price,
-    quantity,
-    image,
-  });
+  // Basic validation
+  if (!CurrentuserId || !ItemsN || !price || !quantity || !image) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
+    const newItems = new Cart({
+      CurrentuserId,
+      ItemsN,
+      price,
+      quantity,
+      image,
+    });
+
     const savedItems = await newItems.save();
-    res.status(201).json(savedItems);
+    res.status(201).json({ message: "Item added to cart successfully", item: savedItems });
   } catch (error) {
-    next(error);
-    console.log(error);
+    console.error("Error adding to cart:", error);
+    res.status(500).json({ message: "Failed to add item to cart" });
   }
 };
 

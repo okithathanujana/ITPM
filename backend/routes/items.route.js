@@ -4,7 +4,10 @@ import {
   updateItem, 
   getAllItems, 
   deleteItem, 
-  deleteItems 
+  deleteItems,
+  Cartcrete,
+  getCartItem,
+  deleteItemss
 } from '../controllers/items.controller.js';
 
 const router = express.Router();
@@ -24,10 +27,10 @@ router.delete('/delete/:ItemmId', deleteItem);
 // Route to delete all items (optional)
 router.delete('/deleteall', deleteItems);
 
-router.put('/Update/:itemId', updateItem); // Handle updating product by itemId
-
-router.get('/IgetAll', getAllItems);  // Ensure the route is fetching all items, including dates
-
-
+// Cart Routes
+router.post('/Ccreate', Cartcrete);  // Add to cart
+router.get('/CgetAll/:CurrentuserId', getCartItem);  // Get cart items
+router.delete('/deletes/:itemsId', deleteItemss);  // Remove item from cart
+router.delete('/deleteall/:CurrentuserId', deleteItemss);  // Clear cart
 
 export default router;

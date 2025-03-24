@@ -43,9 +43,9 @@ const Main = () => {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-yellow-600 font-serif">Our Products</h1>
+          <h1 className="text-3xl font-bold text-blue-600 font-serif">Our Products</h1>
           <Link to="/cart">
-            <button className="bg-yellow-500 text-white px-4 py-2 rounded-full hover:bg-yellow-600 transition-colors duration-200 flex items-center">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors duration-200 flex items-center">
               <FaShoppingCart className="mr-2" />
               <span className="font-serif uppercase">Cart</span>
             </button>
@@ -57,7 +57,7 @@ const Main = () => {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              className="w-full py-2 px-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
               onChange={(e) => setQuery(e.target.value)}
             />
             <FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -79,11 +79,11 @@ const Main = () => {
                 </Link>
                 <div className="p-4 flex flex-col flex-grow">
                   <h2 className="text-lg font-semibold text-gray-800 mb-2 truncate">{item.ItemsN}</h2>
-                  <p className="text-yellow-600 font-bold mb-2">Rs.{item.price}</p>
+                  <p className="text-blue-600 font-bold mb-2">Rs.{item.price}</p>
                   <p className="text-sm text-gray-600 mb-4 truncate">{item.descrip}</p>
                   <div className="mt-auto">
                     <Link to={`/details/${item._id}`} className="block">
-                      <button className="w-full bg-yellow-500 text-white py-2 px-4 rounded-full hover:bg-yellow-600 transition-colors duration-200 uppercase text-sm font-serif">
+                      <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition-colors duration-200 uppercase text-sm font-serif">
                         Select Option
                       </button>
                     </Link>

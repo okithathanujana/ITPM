@@ -214,7 +214,7 @@ function SignUpPage() {
         </form>
 
         <button
-          className="mt-10 block w-full rounded-lg bg-yellow-500 py-3 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md hover:shadow-lg transition-all"
+          className="mt-10 block w-full rounded-lg bg-blue-600 py-3 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md hover:shadow-lg transition-all"
           type="submit"
           onClick={submitHandler}
         >

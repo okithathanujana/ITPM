@@ -58,7 +58,7 @@ function BMICalculator() {
                 </div>
                 <button
                     type="submit"
-                    className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-black"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-black"
                 >
                     Calculate BMI
                 </button>

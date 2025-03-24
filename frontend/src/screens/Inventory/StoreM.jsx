@@ -14,14 +14,14 @@ import {
 
 const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) => {
   return (
-    <li className="bg-white border-b border-yellow-200 hover:bg-yellow-50 transition-colors duration-150">
+    <li className="bg-white border-b border-blue-200 hover:bg-blue-50 transition-colors duration-150">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
           <input
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(product._id)}
-            className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <img src={product.image} alt={product.ItemsN} className="w-16 h-16 object-cover rounded-md" />
           <div>
@@ -35,7 +35,7 @@ const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) =>
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(product._id)}
-              className="p-2 text-yellow-600 hover:text-yellow-800 transition-colors duration-150"
+              className="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-150"
               title="Edit Product"
             >
               <PencilIcon size={18} />
@@ -449,9 +449,9 @@ export default function StoreM() {
   const isAllSelected = Info.length > 0 && Object.values(selectedItems).every(Boolean);
 
   return (
-    <div className="min-h-screen bg-yellow-50">
+    <div className="min-h-screen bg-blue-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-center text-4xl font-bold mb-8 text-yellow-600">
+        <h1 className="text-center text-4xl font-bold mb-8 text-blue-600">
           Product Management
         </h1>
 
@@ -459,20 +459,20 @@ export default function StoreM() {
           <input
             type="text"
             placeholder="Search products..."
-            className="w-full md:w-64 px-4 py-2 rounded-full border border-yellow-300 focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+            className="w-full md:w-64 px-4 py-2 rounded-full border border-blue-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onChange={(e) => setQuery(e.target.value)}
           />
           <div className="flex space-x-4">
             <Link
               to="/add-inventory"
-              className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md transition duration-300"
+              className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-md transition duration-300"
             >
               <PlusIcon size={18} className="mr-2" />
               New Product
             </Link>
             <button
               onClick={generatePDF}
-              className="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white font-bold px-4 py-2 rounded-md transition duration-300"
+              className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-md transition duration-300"
             >
               <DownloadIcon size={18} className="mr-2" />
               Download Report
@@ -486,7 +486,7 @@ export default function StoreM() {
             </button>
             <button
               onClick={() => setIsReorderModalOpen(true)}
-              className="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 py-2 rounded-md transition duration-300"
+              className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-md transition duration-300"
               disabled={reorderList.length === 0}
               title={reorderList.length === 0 ? "No items in reorder list" : "View Reorder List"}
             >
@@ -502,18 +502,18 @@ export default function StoreM() {
         </div>
 
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-yellow-200">
+          <div className="p-4 border-b border-blue-200">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={isAllSelected}
                 onChange={handleSelectAll}
-                className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500"
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-sm font-medium text-gray-700">Select All</span>
             </label>
           </div>
-          <ul className="divide-y divide-yellow-200">
+          <ul className="divide-y divide-blue-200">
             {filter.length > 0 ? (
               filter.map((product) => (
                 <ProductListItem
@@ -539,8 +539,8 @@ export default function StoreM() {
         {isReorderModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white w-11/12 md:w-3/4 lg:w-1/2 rounded-lg shadow-lg overflow-y-auto max-h-full">
-              <div className="flex justify-between items-center p-4 border-b border-yellow-200">
-                <h2 className="text-2xl font-bold text-yellow-600">Reorder List</h2>
+              <div className="flex justify-between items-center p-4 border-b border-blue-200">
+                <h2 className="text-2xl font-bold text-blue-600">Reorder List</h2>
                 <button
                   onClick={() => setIsReorderModalOpen(false)}
                   className="text-gray-600 hover:text-gray-800"
@@ -613,7 +613,7 @@ export default function StoreM() {
                   <p className="text-center text-gray-500 py-6">No items in the reorder list.</p>
                 )}
               </div>
-              <div className="p-4 border-t border-yellow-200 flex justify-end space-x-4">
+              <div className="p-4 border-t border-blue-200 flex justify-end space-x-4">
                 <button
                   onClick={generateReorderPDF}
                   className={`inline-flex items-center justify-center bg-purple-500 hover:bg-purple-600 text-white font-bold px-4 py-2 rounded-md transition duration-300 ${

@@ -83,7 +83,7 @@ const LoginScreen = () => {
           <button
             disabled={isLoading}
             type="submit"
-            className="mt-10 block w-full rounded-lg bg-yellow-500 py-3 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md hover:shadow-lg transition-all"
+            className="mt-10 block w-full rounded-lg bg-blue-600 py-3 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md hover:shadow-lg transition-all"
           >
             Sign In
           </button>
@@ -93,14 +93,14 @@ const LoginScreen = () => {
 
         <p className="mt-4 text-center text-white">
           Forgot Password?{' '}
-          <Link to="/forgot-password" className="text-yellow-500 underline">
+          <Link to="/forgot-password" className="text-blue-600 underline">
             Reset Here
           </Link>
         </p>
 
         <p className="mt-4 text-center text-white">
           New Customer?{' '}
-          <Link to="/register" className="text-yellow-500 underline">
+          <Link to="/register" className="text-blue-600 underline">
             Register
           </Link>
         </p>

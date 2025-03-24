@@ -24,6 +24,8 @@ export default function CreatePost() {
     descrip: "", // Description
     manufactureDate: "", // Manufacture date
     expiryDate: "", // Expiry date
+    size: "N/A",
+    flavor: "N/A"
   });
   const [publishError, setPublishError] = useState(null);
   const [validationError, setValidationError] = useState(null);
@@ -78,13 +80,25 @@ export default function CreatePost() {
     }
 
     // Validate dates
-    if (new Date(expiryDate) <= new Date(manufactureDate)) {
+    const mDate = new Date(manufactureDate);
+    const eDate = new Date(expiryDate);
+
+    if (isNaN(mDate.getTime()) || isNaN(eDate.getTime())) {
+      setValidationError("Please enter valid dates");
+      return;
+    }
+
+    if (eDate <= mDate) {
       setValidationError("Expiry date must be after manufacture date");
       return;
     }
 
     try {
-      const dataToSubmit = { ...formData };
+      const dataToSubmit = {
+        ...formData,
+        manufactureDate: mDate.toISOString(),
+        expiryDate: eDate.toISOString()
+      };
 
       const res = await fetch("/api/items/create", {
         method: "POST",
@@ -110,10 +124,10 @@ export default function CreatePost() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-100 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
         <div>
-          <Link to="/inventory" className="flex items-center text-yellow-600 hover:text-yellow-700 transition duration-150 ease-in-out mb-6">
+          <Link to="/inventory" className="flex items-center text-blue-600 hover:text-blue-700 transition duration-150 ease-in-out mb-6">
             <ArrowLeft size={20} className="mr-2" />
             <span>Back to Inventory</span>
           </Link>
@@ -130,7 +144,7 @@ export default function CreatePost() {
                 name="product-name"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Product Name"
                 value={formData.ItemsN}
                 onChange={(e) => setFormData({ ...formData, ItemsN: e.target.value })}
@@ -146,7 +160,7 @@ export default function CreatePost() {
                 type="number"
                 min="0"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Per Unit Price"
                 value={formData.unitPrice}
                 onChange={(e) => setFormData({ ...formData, unitPrice: e.target.value })}
@@ -162,7 +176,7 @@ export default function CreatePost() {
                 type="number"
                 min="0"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Per Pack Price"
                 value={formData.packPrice}
                 onChange={(e) => setFormData({ ...formData, packPrice: e.target.value })}
@@ -177,41 +191,39 @@ export default function CreatePost() {
                 type="number"
                 min="1"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Quantity"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               />
             </div>
 
-            {/* Manufacture Date */}
-            <div>
-              <label htmlFor="manufactureDate" className="sr-only">Manufacture Date</label>
-              <input
-                id="manufactureDate"
-                name="manufactureDate"
-                type="date"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                value={formData.manufactureDate}
-                onChange={(e) => setFormData({ ...formData, manufactureDate: e.target.value })}
-              />
-              <div className="text-xs text-gray-500 px-3 py-1">Manufacture Date</div>
-            </div>
+            <div className="space-y-4 mt-4">
+              <div>
+                <label htmlFor="manufactureDate" className="block text-sm font-medium text-gray-700">Manufacture Date</label>
+                <input
+                  type="date"
+                  id="manufactureDate"
+                  name="manufactureDate"
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                  value={formData.manufactureDate}
+                  onChange={(e) => setFormData({ ...formData, manufactureDate: e.target.value })}
+                />
+              </div>
 
-            {/* Expiry Date */}
-            <div>
-              <label htmlFor="expiryDate" className="sr-only">Expiry Date</label>
-              <input
-                id="expiryDate"
-                name="expiryDate"
-                type="date"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
-                value={formData.expiryDate}
-                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-              />
-              <div className="text-xs text-gray-500 px-3 py-1">Expiry Date</div>
+              <div>
+                <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                <input
+                  type="date"
+                  id="expiryDate"
+                  name="expiryDate"
+                  required
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
+                  value={formData.expiryDate}
+                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                />
+              </div>
             </div>
 
             <div>
@@ -220,7 +232,7 @@ export default function CreatePost() {
                 id="description"
                 name="description"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
                 placeholder="Description"
                 rows="3"
                 value={formData.descrip}
@@ -239,14 +251,14 @@ export default function CreatePost() {
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
-                  file:bg-yellow-50 file:text-yellow-700
-                  hover:file:bg-yellow-100"
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100"
               />
               <button
                 type="button"
                 onClick={handleUploadImage}
                 disabled={imageUploadProgress}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50"
               >
                 {imageUploadProgress ? (
                   <CircularProgressbar
@@ -283,7 +295,7 @@ export default function CreatePost() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
             >
               Add Product
             </button>
