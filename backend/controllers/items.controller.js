@@ -1,15 +1,25 @@
 import Cart from "../models/cart.mode.js";
 import Items from "../models/items.model.js";
+import Items from "../models/items.model.js";
 
 // Add new item
 export const Itcreate = async (req, res, next) => {
-  const { ItemsN, unitPrice, packPrice, quantity, image, descrip } = req.body;
+  const { ItemsN, unitPrice, packPrice, quantity, image, descrip, manufactureDate, expiryDate } = req.body;
 
-  // Validation: Ensure that all required fields are provided
-  if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip) {
+  // Basic validation
+  if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip || !manufactureDate || !expiryDate) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  // Ensure that the dates are valid Date objects
+  const formattedManufactureDate = new Date(manufactureDate);
+  const formattedExpiryDate = new Date(expiryDate);
+
+  if (isNaN(formattedManufactureDate.getTime()) || isNaN(formattedExpiryDate.getTime())) {
+    return res.status(400).json({ message: "Invalid date format" });
+  }
+
+  // Create new item with valid dates
   const newItems = new Items({
     ItemsN,
     unitPrice,
@@ -17,7 +27,11 @@ export const Itcreate = async (req, res, next) => {
     quantity,
     image,
     descrip,
+    manufactureDate: formattedManufactureDate,
+    expiryDate: formattedExpiryDate,
+   
   });
+  
 
   try {
     const savedItems = await newItems.save();
@@ -46,15 +60,23 @@ export const getAllItems = async (req, res, next) => {
 
 // Update item
 export const updateItem = async (req, res, next) => {
-  const { unitPrice, packPrice, quantity, ItemsN, descrip, image } = req.body;
+  const { unitPrice, packPrice, quantity, ItemsN, descrip, image, manufactureDate, expiryDate } = req.body;
 
   // Validation for price
   if (!unitPrice || !packPrice) {
     return res.status(400).json({ message: "Both unit price and pack price are required" });
   }
 
+  // Ensure that the dates are valid Date objects
+  const formattedManufactureDate = new Date(manufactureDate);
+  const formattedExpiryDate = new Date(expiryDate);
+
+  if (isNaN(formattedManufactureDate.getTime()) || isNaN(formattedExpiryDate.getTime())) {
+    return res.status(400).json({ message: "Invalid date format" });
+  }
+
   try {
-    const updatedItem = await Items.findByIdAndUpdate(
+    const updateItem = await Items.findByIdAndUpdate(
       req.params.itemId,
       {
         $set: {
@@ -64,11 +86,14 @@ export const updateItem = async (req, res, next) => {
           packPrice,
           quantity,
           image,
+          manufactureDate: formattedManufactureDate,
+          expiryDate: formattedExpiryDate,
+          
         },
       },
       { new: true }
     );
-    res.status(200).json(updatedItem);
+    res.status(200).json(updateItem);
   } catch (error) {
     next(error);
   }
@@ -88,7 +113,7 @@ export const deleteItem = async (req, res, next) => {
 export const Cartcrete = async (req, res, next) => {
   const { CurrentuserId, ItemsN, price, quantity, image } = req.body;
 
-  const newItem = new Cart({
+  const newItems = new Cart({
     CurrentuserId,
     ItemsN,
     price,
@@ -97,8 +122,8 @@ export const Cartcrete = async (req, res, next) => {
   });
 
   try {
-    const savedItem = await newItem.save();
-    res.status(201).json(savedItem);
+    const savedItems = await newItems.save();
+    res.status(201).json(savedItems);
   } catch (error) {
     next(error);
     console.log(error);

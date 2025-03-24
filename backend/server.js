@@ -14,7 +14,7 @@ import itemsRouter from './routes/items.route.js';
 
 
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3003;
 
 // Connect to the database
 connectDB();
@@ -62,8 +62,3 @@ app.use(errorHandler);
 
 // Start the server
 app.listen(port, () => console.log(`Server started on port ${port}`));
-
-
-
-
-

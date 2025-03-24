@@ -1,16 +1,33 @@
-import express from "express";
-import { Cartcrete, deleteItem, deleteItems, deleteItemss, getAllItems, getCartItem, Itcreate, updateItem } from "../controllers/items.controller.js";
+import express from 'express';
+import { 
+  Itcreate, 
+  updateItem, 
+  getAllItems, 
+  deleteItem, 
+  deleteItems 
+} from '../controllers/items.controller.js';
 
 const router = express.Router();
 
-// Updated route for creating an item
+// Route to create a new item
 router.post('/create', Itcreate);
+
+// Route to get all items
 router.get('/IgetAll', getAllItems);
+
+// Route to update an item by itemId
 router.put('/Update/:itemId', updateItem);
+
+// Route to delete an item by itemId
 router.delete('/delete/:ItemmId', deleteItem);
-router.post('/Ccreate', Cartcrete);
-router.get('/CgetAll/:CurrentuserId', getCartItem);
-router.delete('/deletes/:itemsId', deleteItems);
-router.delete('/deletesall/:CurrentuserId', deleteItemss);
+
+// Route to delete all items (optional)
+router.delete('/deleteall', deleteItems);
+
+router.put('/Update/:itemId', updateItem); // Handle updating product by itemId
+
+router.get('/IgetAll', getAllItems);  // Ensure the route is fetching all items, including dates
+
+
 
 export default router;

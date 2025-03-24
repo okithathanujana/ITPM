@@ -186,6 +186,7 @@ export default function UpdateProduct() {
                 onChange={(e) => setFormData({ ...formData, packPrice: e.target.value })}
               />
             </div>
+
             {priceValidation && (
               <p className="text-sm text-red-600">{priceValidation}</p>
             )}
@@ -203,6 +204,25 @@ export default function UpdateProduct() {
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               />
             </div>
+
+            <input
+  type="date"
+  id="manufactureDate"
+  value={formData.manufactureDate || ""}
+  onChange={(e) => setFormData({ ...formData, manufactureDate: e.target.value })}
+  required
+  className="block w-full px-3 py-2 border border-gray-300 rounded-md"
+/>
+
+<input
+  type="date"
+  id="expiryDate"
+  value={formData.expiryDate || ""}
+  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+  required
+  className="block w-full px-3 py-2 border border-gray-300 rounded-md"
+/>
+
             <div>
               <label htmlFor="description" className="sr-only">Description</label>
               <textarea

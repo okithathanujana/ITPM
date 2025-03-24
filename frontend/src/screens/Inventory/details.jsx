@@ -109,35 +109,41 @@ export default function Details() {
               <p className="mt-2 text-xl text-yellow-600 font-mono">Rs: {priceOption === "unit" ? formData.unitPrice : formData.packPrice}</p>
 
               {/* Price option radio buttons */}
-              <div className="mt-6">
+              <div className="mt-4">
                 <label className="text-gray-700 font-serif mr-4">Order In:</label>
-                <div className="space-y-4">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="priceOption"
-                      value="unit"
-                      checked={priceOption === "unit"}
-                      onChange={() => setPriceOption("unit")}
-                      className="mr-2"
-                    />
-                    <span className="font-bold">LKR {formData.unitPrice}</span> <span className="ml-2">Per unit</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="priceOption"
-                      value="pack"
-                      checked={priceOption === "pack"}
-                      onChange={() => setPriceOption("pack")}
-                      className="mr-2"
-                    />
-                    <span className="font-bold">LKR {formData.packPrice}</span> <span className="ml-2">Per pack</span>
-                  </label>
-                </div>
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="unit"
+                    checked={priceOption === "unit"}
+                    onChange={() => setPriceOption("unit")}
+                  />
+                  LKR {formData.unitPrice} Per unit
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="pack"
+                    checked={priceOption === "pack"}
+                    onChange={() => setPriceOption("pack")}
+                  />
+                  LKR {formData.packPrice} Per pack
+                </label>
               </div>
 
               {renderDescriptionPoints()}
+
+              {/* Display Manufacture and Expiry Date */}
+              <div className="mt-4">
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Product Dates:</h3>
+              <ul className="space-y-2">
+                <li><strong>Manufacture Date:</strong> {new Date(formData.manufactureDate).toLocaleDateString()}</li>
+                <li><strong>Expiry Date:</strong> {new Date(formData.expiryDate).toLocaleDateString()}</li>
+              </ul>
+            </div>
 
               <div className="mt-6 flex items-center">
                 <span className="mr-3 text-gray-700 font-serif">Quantity:</span>

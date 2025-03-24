@@ -22,6 +22,8 @@ export default function CreatePost() {
     quantity: "", // Quantity
     image: "", // Product image
     descrip: "", // Description
+    manufactureDate: "", // Manufacture date
+    expiryDate: "", // Expiry date
   });
   const [publishError, setPublishError] = useState(null);
   const [validationError, setValidationError] = useState(null);
@@ -69,16 +71,20 @@ export default function CreatePost() {
     e.preventDefault();
 
     // Validation: Check if any required field is empty
-    const { ItemsN, unitPrice, packPrice, quantity, image, descrip } = formData;
-    if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip) {
+    const { ItemsN, unitPrice, packPrice, quantity, image, descrip, manufactureDate, expiryDate } = formData;
+    if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip || !manufactureDate || !expiryDate) {
       setValidationError("All fields are required");
       return;
     }
 
+    // Validate dates
+    if (new Date(expiryDate) <= new Date(manufactureDate)) {
+      setValidationError("Expiry date must be after manufacture date");
+      return;
+    }
+
     try {
-      const dataToSubmit = {
-        ...formData,
-      };
+      const dataToSubmit = { ...formData };
 
       const res = await fetch("/api/items/create", {
         method: "POST",
@@ -176,6 +182,36 @@ export default function CreatePost() {
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               />
+            </div>
+
+            {/* Manufacture Date */}
+            <div>
+              <label htmlFor="manufactureDate" className="sr-only">Manufacture Date</label>
+              <input
+                id="manufactureDate"
+                name="manufactureDate"
+                type="date"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                value={formData.manufactureDate}
+                onChange={(e) => setFormData({ ...formData, manufactureDate: e.target.value })}
+              />
+              <div className="text-xs text-gray-500 px-3 py-1">Manufacture Date</div>
+            </div>
+
+            {/* Expiry Date */}
+            <div>
+              <label htmlFor="expiryDate" className="sr-only">Expiry Date</label>
+              <input
+                id="expiryDate"
+                name="expiryDate"
+                type="date"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10 sm:text-sm"
+                value={formData.expiryDate}
+                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+              />
+              <div className="text-xs text-gray-500 px-3 py-1">Expiry Date</div>
             </div>
 
             <div>
