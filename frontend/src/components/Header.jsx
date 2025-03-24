@@ -59,7 +59,7 @@ const Header = () => {
                   onClick={() => navigate('/dashboard')}
                   className="text-white text-sm font-medium hover:text-gray-200"
                 >
-                  Dashboard
+                  .
                 </button>
               )}
               {userInfo.isAdmin && (
@@ -75,7 +75,7 @@ const Header = () => {
                   onClick={() => navigate('/feedback')}
                   className="text-white text-sm font-medium hover:text-gray-200"
                 >
-                  Feedback
+                  .
                 </button>
               )}
               {userInfo.userType === 'Member' && (
@@ -91,7 +91,7 @@ const Header = () => {
                   onClick={() => navigate('/myschedule')}
                   className="text-white text-sm font-medium hover:text-gray-200"
                 >
-                  My Schedule
+                  .
                 </button>
               )}
               <div className="relative">

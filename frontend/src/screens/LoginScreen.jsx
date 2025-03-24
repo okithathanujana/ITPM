@@ -24,7 +24,7 @@ const LoginScreen = () => {
       } else if (userInfo.userType === 'Member') {
         navigate('/store');
       } else {
-        navigate('/'); // Fallback or home page if no userType found
+        navigate('/');
       }
     }
   }, [navigate, userInfo]);
@@ -36,13 +36,11 @@ const LoginScreen = () => {
       dispatch(setCredentials({ ...res }));
 
       if (res.isAdmin) {
-        navigate('/admin-dashboard');
-      } else if (res.userType === 'Trainer') {
-        navigate('/trainer-dashboard');
+        navigate('/inventory');
       } else if (res.userType === 'Member') {
-        navigate('/member-dashboard');
+        navigate('/store');
       } else {
-        navigate('/'); // Fallback or home page
+        navigate('/');
       }
 
       toast.success('Login Successful!');
@@ -52,56 +50,61 @@ const LoginScreen = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-cover bg-center">
-      <div className="relative flex flex-col text-gray-700 bg-black bg-opacity-70 shadow-none rounded-xl bg-clip-border p-8 mb-20 w-full max-w-md">
-        <h4 className="text-5xl font-semibold text-center text-white">Sign In</h4>
-        <p className="mt-1 text-xl font-normal text-center text-white">
-          Welcome back to the Gym Management System
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-white">
+      <div className="relative flex flex-col bg-white shadow-lg rounded-xl p-8 w-full max-w-md">
+        <h4 className="text-4xl font-bold text-center text-gray-900 mb-2">Welcome Back</h4>
+        <p className="text-lg text-center text-gray-600 mb-8">
+          Sign in to your MediCart account
         </p>
 
-        <form onSubmit={submitHandler} className="mt-8 flex flex-col gap-6">
-          <div className="relative h-11 w-full">
+        <form onSubmit={submitHandler} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</label>
             <input
+              id="email"
               type="email"
-              placeholder="Enter email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="peer h-full w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm text-blue-gray-700 transition-all focus:border-2 focus:border-gray-900"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              required
             />
           </div>
 
-          <div className="relative h-11 w-full">
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700">Password</label>
             <input
+              id="password"
               type="password"
-              placeholder="Enter password"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="peer h-full w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm text-blue-gray-700 transition-all focus:border-2 focus:border-gray-900"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              required
             />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+              Forgot your password?
+            </Link>
           </div>
 
           <button
             disabled={isLoading}
             type="submit"
-            className="mt-10 block w-full rounded-lg bg-blue-600 py-3 px-6 text-center font-sans text-xs font-bold uppercase text-white shadow-md hover:shadow-lg transition-all"
+            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
           >
-            Sign In
+            {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         {isLoading && <Loader />}
 
-        <p className="mt-4 text-center text-white">
-          Forgot Password?{' '}
-          <Link to="/forgot-password" className="text-blue-600 underline">
-            Reset Here
-          </Link>
-        </p>
-
-        <p className="mt-4 text-center text-white">
-          New Customer?{' '}
-          <Link to="/register" className="text-blue-600 underline">
-            Register
+        <p className="mt-6 text-center text-gray-600">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+            Create Account
           </Link>
         </p>
       </div>
