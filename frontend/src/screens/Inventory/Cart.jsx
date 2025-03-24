@@ -10,52 +10,69 @@ const Cart = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!currentUserId) {
-          navigate('/login');
-          return;
-        }
-
-        const response = await fetch(`/api/items/CgetAll/${currentUserId}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          setInfo(data);
-          const totalPrice = data.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          );
-          setTotalPrice(totalPrice);
-        } else {
-          console.error("Error fetching cart data:", data.message);
-          setInfo([]);
-          setTotalPrice(0);
-        }
-      } catch (error) {
-        console.error("Error fetching cart data:", error);
+  const fetchCartData = async () => {
+    try {
+      if (!currentUserId) {
+        navigate('/login');
+        return;
       }
-    };
 
-    fetchData();
+      const response = await fetch(`/api/items/CgetAll/${currentUserId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setInfo(data);
+        const total = data.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0
+        );
+        setTotalPrice(total);
+      } else {
+        console.error("Error fetching cart data:", data.message);
+        setInfo([]);
+        setTotalPrice(0);
+      }
+    } catch (error) {
+      console.error("Error fetching cart data:", error);
+      setInfo([]);
+      setTotalPrice(0);
+    }
+  };
+
+  useEffect(() => {
+    fetchCartData();
   }, [currentUserId, navigate]);
 
   const handleDeleteItem = async (itemId) => {
     try {
+      if (!window.confirm('Are you sure you want to remove this item from cart?')) {
+        return;
+      }
+
       const res = await fetch(`/api/items/deletes/${itemId}`, {
         method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+
       const data = await res.json();
+      
       if (res.ok) {
-        setInfo((prev) => prev.filter((item) => item._id !== itemId));
-        setTotalPrice((prev) => prev - (info.find(item => item._id === itemId).price * info.find(item => item._id === itemId).quantity));
-        alert("Item successfully removed from cart");
+        // Remove item from local state
+        setInfo(prev => prev.filter(item => item._id !== itemId));
+        // Update total price
+        const deletedItem = info.find(item => item._id === itemId);
+        if (deletedItem) {
+          setTotalPrice(prev => prev - (deletedItem.price * deletedItem.quantity));
+        }
+        alert(data.message || "Item successfully removed from cart");
       } else {
-        console.error(data.message);
+        alert(data.message || "Error removing item from cart");
       }
     } catch (error) {
-      console.error("Error deleting item:", error.message);
+      console.error("Error deleting item:", error);
+      alert("Error removing item from cart");
     }
   };
 

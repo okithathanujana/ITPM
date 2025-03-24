@@ -141,26 +141,38 @@ export const getCartItem = async (req, res, next) => {
 };
 
 // Remove one item from the cart
-export const deleteItems = async (req, res, next) => {
+export const deleteItems = async (req, res) => {
   try {
-    await Cart.findByIdAndDelete(req.params.itemsId);
-    res.status(200).json("The post has been deleted");
+    const { itemId } = req.params;
+    
+    // Check if the item exists
+    const cartItem = await Cart.findById(itemId);
+    if (!cartItem) {
+      return res.status(404).json({ message: "Cart item not found" });
+    }
+
+    // Delete the item
+    await Cart.findByIdAndDelete(itemId);
+    res.status(200).json({ message: "Item has been removed from cart" });
   } catch (error) {
-    next(error);
+    console.error("Error deleting cart item:", error);
+    res.status(500).json({ message: "Failed to remove item from cart" });
   }
 };
 
 // Clear the cart
-export const deleteItemss = async (req, res, next) => {
+export const deleteItemss = async (req, res) => {
   try {
     const { CurrentuserId } = req.params;
-
-    // Delete items associated with the specified CurrentUserId
-    await Cart.deleteMany({ CurrentuserId });
-
-    res.status(200).json({ message: "Items have been deleted successfully" });
+    const result = await Cart.deleteMany({ CurrentuserId });
+    
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: "All items have been removed from cart" });
+    } else {
+      res.status(404).json({ message: "No items found in cart" });
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error clearing cart:", error);
+    res.status(500).json({ message: "Failed to clear cart" });
   }
 };

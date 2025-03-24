@@ -30,7 +30,7 @@ router.delete('/deleteall', deleteItems);
 // Cart Routes
 router.post('/Ccreate', Cartcrete);  // Add to cart
 router.get('/CgetAll/:CurrentuserId', getCartItem);  // Get cart items
-router.delete('/deletes/:itemsId', deleteItemss);  // Remove item from cart
+router.delete('/deletes/:itemId', deleteItems);  // Remove item from cart
 router.delete('/deleteall/:CurrentuserId', deleteItemss);  // Clear cart
 
 export default router;
