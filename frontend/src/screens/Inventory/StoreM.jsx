@@ -173,26 +173,28 @@ export default function StoreM() {
       { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
       { title: "Pack Price (Rs)", dataKey: "packPrice" },
-      { title: "Unit Price (Rs)", dataKey: "unitPrice" },
+      { title: "Mfg Date", dataKey: "mfgDate" },
+      { title: "Exp Date", dataKey: "expDate" }
     ];
 
     let totalQuantity = 0;
-    let totalPackPrice = 0;
+    let totalValue = 0;
     
     // Prepare data for table
-    const data = Info.map((product) => {
-      const packPrice = parseFloat(product.price) || 0;
+    const data = filter.map((product) => {
       const quantity = parseInt(product.quantity) || 0;
-      const unitPrice = calculatePerUnitPrice(product);
+      // Get pack price from either packPrice or price field
+      const packPrice = parseFloat(product.packPrice || product.price) || 0;
       
       totalQuantity += quantity;
-      totalPackPrice += packPrice;
-      
+      totalValue += packPrice * quantity;
+
       return {
-        name: product.ItemsN || "Unnamed Product",
+        name: product.ItemsN,
         quantity: quantity.toString(),
         packPrice: packPrice.toFixed(2),
-        unitPrice: unitPrice,
+        mfgDate: new Date(product.manufactureDate).toLocaleDateString(),
+        expDate: new Date(product.expiryDate).toLocaleDateString()
       };
     });
 
@@ -200,39 +202,45 @@ export default function StoreM() {
     data.push({
       name: "TOTAL",
       quantity: totalQuantity.toString(),
-      packPrice: totalPackPrice.toFixed(2),
-      unitPrice: "",
+      packPrice: totalValue.toFixed(2),
+      mfgDate: "",
+      expDate: ""
     });
 
     // Generate table
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const tableWidth = 195; // Sum of all column widths
+    const leftMargin = (pageWidth - tableWidth) / 2;
+
     doc.autoTable({
       startY: 65,
       columns: columns,
       body: data,
-      margin: { top: 65, right: 20, bottom: 20, left: 20 },
+      margin: { top: 65, right: leftMargin, bottom: 20, left: leftMargin },
       styles: { 
-        fontSize: 10, 
+        fontSize: 9, 
         cellPadding: 3,
         lineColor: [200, 200, 200],
         lineWidth: 0.1
       },
       headStyles: { 
-        fillColor: [255, 193, 7], 
-        textColor: [0, 0, 0], 
+        fillColor: [51, 122, 183], 
+        textColor: [255, 255, 255], 
         fontStyle: "bold",
         halign: "center"
       },
-      alternateRowStyles: { fillColor: [252, 248, 232] },
+      alternateRowStyles: { fillColor: [240, 245, 255] },
       columnStyles: { 
-        0: { cellWidth: 80, halign: "left" }, 
+        0: { cellWidth: 70, halign: "left" }, 
         1: { cellWidth: 30, halign: "center" }, 
-        2: { cellWidth: 40, halign: "right" }, 
-        3: { cellWidth: 40, halign: "right" } 
+        2: { cellWidth: 35, halign: "right" },
+        3: { cellWidth: 30, halign: "center" },
+        4: { cellWidth: 30, halign: "center" }
       },
       didParseCell: function(data) {
         if (data.row.index === data.table.body.length - 1) {
           data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fillColor = [255, 255, 200];
+          data.cell.styles.fillColor = [220, 230, 241]; 
           data.cell.styles.textColor = [0, 0, 0];
         }
       },
@@ -290,26 +298,28 @@ export default function StoreM() {
       { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
       { title: "Pack Price (Rs)", dataKey: "packPrice" },
-      { title: "Unit Price (Rs)", dataKey: "unitPrice" },
+      { title: "Mfg Date", dataKey: "mfgDate" },
+      { title: "Exp Date", dataKey: "expDate" }
     ];
 
     let totalQuantity = 0;
-    let totalPackPrice = 0;
+    let totalValue = 0;
     
-    // Prepare data for table
+    // Prepare data for reorder table
     const data = reorderList.map((product) => {
-      const packPrice = parseFloat(product.price) || 0;
       const quantity = parseInt(product.quantity) || 0;
-      const unitPrice = calculatePerUnitPrice(product);
+      // Get pack price from either packPrice or price field
+      const packPrice = parseFloat(product.packPrice || product.price) || 0;
       
       totalQuantity += quantity;
-      totalPackPrice += packPrice;
-      
+      totalValue += packPrice * quantity;
+
       return {
-        name: product.ItemsN || "Unnamed Product",
+        name: product.ItemsN,
         quantity: quantity.toString(),
         packPrice: packPrice.toFixed(2),
-        unitPrice: unitPrice,
+        mfgDate: new Date(product.manufactureDate).toLocaleDateString(),
+        expDate: new Date(product.expiryDate).toLocaleDateString()
       };
     });
 
@@ -317,18 +327,23 @@ export default function StoreM() {
     data.push({
       name: "TOTAL",
       quantity: totalQuantity.toString(),
-      packPrice: totalPackPrice.toFixed(2),
-      unitPrice: "",
+      packPrice: totalValue.toFixed(2),
+      mfgDate: "",
+      expDate: ""
     });
 
     // Generate table
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const tableWidth = 195; // Sum of all column widths
+    const leftMargin = (pageWidth - tableWidth) / 2;
+
     doc.autoTable({
       startY: 65,
       columns: columns,
       body: data,
-      margin: { top: 65, right: 20, bottom: 20, left: 20 },
+      margin: { top: 65, right: leftMargin, bottom: 20, left: leftMargin },
       styles: { 
-        fontSize: 10, 
+        fontSize: 9, 
         cellPadding: 3,
         lineColor: [200, 200, 200],
         lineWidth: 0.1
@@ -341,10 +356,11 @@ export default function StoreM() {
       },
       alternateRowStyles: { fillColor: [240, 245, 255] },
       columnStyles: { 
-        0: { cellWidth: 80, halign: "left" }, 
+        0: { cellWidth: 70, halign: "left" }, 
         1: { cellWidth: 30, halign: "center" }, 
-        2: { cellWidth: 40, halign: "right" }, 
-        3: { cellWidth: 40, halign: "right" } 
+        2: { cellWidth: 35, halign: "right" },
+        3: { cellWidth: 30, halign: "center" },
+        4: { cellWidth: 30, halign: "center" }
       },
       didParseCell: function(data) {
         if (data.row.index === data.table.body.length - 1) {
@@ -553,9 +569,7 @@ export default function StoreM() {
                 {reorderList.length > 0 ? (
                   <div>
                     <div className="mb-4 bg-blue-50 p-3 rounded-md text-blue-800 text-sm">
-                      {reorderList.length} item(s) in reorder list. Total value: Rs.{
-                        reorderList.reduce((sum, item) => sum + parseFloat(item.price || 0), 0).toFixed(2)
-                      }
+                      {reorderList.length} item(s) in reorder list. Total value: Rs.{reorderList.reduce((sum, item) => sum + parseFloat(item.packPrice || item.price || 0), 0).toFixed(2)}
                     </div>
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200">
@@ -564,7 +578,7 @@ export default function StoreM() {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                             <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
                             <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Pack Price</th>
-                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                            <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Value</th>
                             <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                           </tr>
                         </thead>
@@ -578,10 +592,10 @@ export default function StoreM() {
                                 <div className="text-sm text-gray-500">{item.quantity}</div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-right">
-                                <div className="text-sm text-gray-900">Rs.{parseFloat(item.price).toFixed(2)}</div>
+                                <div className="text-sm text-gray-900">Rs.{parseFloat(item.packPrice || item.price).toFixed(2)}</div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-right">
-                                <div className="text-sm text-gray-900">Rs.{calculatePerUnitPrice(item)}</div>
+                                <div className="text-sm text-gray-900">Rs.{(parseFloat(item.packPrice || item.price) * parseInt(item.quantity)).toFixed(2)}</div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button
@@ -601,7 +615,7 @@ export default function StoreM() {
                               {reorderList.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0)}
                             </td>
                             <td className="px-6 py-3 text-right text-sm font-semibold text-gray-900">
-                              Rs.{reorderList.reduce((sum, item) => sum + parseFloat(item.price || 0), 0).toFixed(2)}
+                              Rs.{reorderList.reduce((sum, item) => sum + parseFloat(item.packPrice || item.price || 0), 0).toFixed(2)}
                             </td>
                             <td colSpan="2"></td>
                           </tr>
