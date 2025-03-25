@@ -162,18 +162,18 @@ export default function StoreM() {
     doc.line(20, 35, doc.internal.pageSize.getWidth() - 20, 35);
 
     // Company info
-    doc.setFontSize(12);
-    doc.text("Your Company Name", 20, 45);
+    doc.setFontSize(14);
+    doc.text("Medi Cart", 20, 45);
     doc.setFontSize(10);
-    doc.text("Contact: +123-456-7890", 20, 52);
-    doc.text("Email: info@yourcompany.com", 20, 58);
+    doc.text("Contact: 011 298 3939", 20, 52);
+    doc.text("Email: info@MediCart.lk", 20, 58);
     
     // Define table columns
     const columns = [
       { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
       { title: "Pack Price (Rs)", dataKey: "packPrice" },
-      { title: "Mfg Date", dataKey: "mfgDate" },
+      { title: "Mf Date", dataKey: "mfgDate" },
       { title: "Exp Date", dataKey: "expDate" }
     ];
 
@@ -287,18 +287,18 @@ export default function StoreM() {
     doc.line(20, 35, doc.internal.pageSize.getWidth() - 20, 35);
 
     // Company info
-    doc.setFontSize(12);
-    doc.text("Your Company Name", 20, 45);
+    doc.setFontSize(14);
+    doc.text("Medi Cart", 20, 45);
     doc.setFontSize(10);
-    doc.text("Contact: +123-456-7890", 20, 52);
-    doc.text("Email: info@yourcompany.com", 20, 58);
+    doc.text("Contact: 011 298 3939", 20, 52);
+    doc.text("Email: info@MediCart.lk", 20, 58);
     
     // Define table columns
     const columns = [
       { title: "Product Name", dataKey: "name" },
       { title: "Quantity", dataKey: "quantity" },
       { title: "Pack Price (Rs)", dataKey: "packPrice" },
-      { title: "Mfg Date", dataKey: "mfgDate" },
+      { title: "Mf Date", dataKey: "mfgDate" },
       { title: "Exp Date", dataKey: "expDate" }
     ];
 
