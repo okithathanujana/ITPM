@@ -125,27 +125,28 @@ export default function Details() {
               {/* Price option radio buttons */}
               <div className="mt-4">
                 <label className="text-gray-700 font-serif mr-4">Order In:</label>
-                <label>
-                  <input
-                    type="radio"
-                    name="priceOption"
-                    value="unit"
-                    checked={priceOption === "unit"}
-                    onChange={() => setPriceOption("unit")}
-                  />
-                  LKR {formData.unitPrice} Per unit
-                </label>
-                <br />
-                <label>
-                  <input
-                    type="radio"
-                    name="priceOption"
-                    value="pack"
-                    checked={priceOption === "pack"}
-                    onChange={() => setPriceOption("pack")}
-                  />
-                  LKR {formData.packPrice} Per pack
-                </label>
+                <div className="mt-2">
+                  <label className="block">
+                    <input
+                      type="radio"
+                      name="priceOption"
+                      value="unit"
+                      checked={priceOption === "unit"}
+                      onChange={() => setPriceOption("unit")}
+                    />
+                    <span className="ml-2 font-bold">LKR {formData.unitPrice} Per unit</span>
+                  </label>
+                  <label className="block mt-2">
+                    <input
+                      type="radio"
+                      name="priceOption"
+                      value="pack"
+                      checked={priceOption === "pack"}
+                      onChange={() => setPriceOption("pack")}
+                    />
+                    <span className="ml-2 font-bold">LKR {formData.packPrice} Per pack</span>
+                  </label>
+                </div>
               </div>
 
               {renderDescriptionPoints()}
