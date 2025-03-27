@@ -67,12 +67,15 @@ const Main = () => {
         {filter && filter.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filter.map((item) => (
-              <div key={item._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
+              <div
+                key={item._id}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col transform hover:scale-105 hover:translate-y-2 hover:transition-all"
+              >
                 <Link to={`/details/${item._id}`} className="flex-shrink-0">
                   <div className="aspect-w-1 aspect-h-1 w-full">
-                    <img 
-                      src={item.image} 
-                      alt={item.ItemsN} 
+                    <img
+                      src={item.image}
+                      alt={item.ItemsN}
                       className="w-full h-full object-cover object-center"
                     />
                   </div>
