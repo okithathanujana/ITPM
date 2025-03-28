@@ -30,7 +30,7 @@ const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) =>
         </div>
         <div className="flex items-center space-x-4">
           <p className="text-sm text-gray-600">Quantity: {product.quantity}</p>
-          <p className="text-sm text-gray-600">Price: Rs.{product.price}</p>
+         
           
           <div className="flex space-x-2">
             <button
