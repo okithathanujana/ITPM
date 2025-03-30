@@ -5,16 +5,16 @@ import Items from "../models/items.model.js";
 export const Itcreate = async (req, res, next) => {
   const { ItemsN, unitPrice, packPrice, quantity, image, descrip, manufactureDate, expiryDate } = req.body;
 
-  // Basic validation
-  if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip || !manufactureDate || !expiryDate) {
-    return res.status(400).json({ message: "All fields are required" });
+  // Basic validation (excluding unitPrice since it's optional)
+  if (!ItemsN || !packPrice || !quantity || !image || !descrip || !manufactureDate || !expiryDate) {
+    return res.status(400).json({ message: "Please fill in all required fields" });
   }
 
   try {
     // Create new item with dates
     const newItems = new Items({
       ItemsN,
-      unitPrice,
+      unitPrice: unitPrice || null, // Allow null for unitPrice
       packPrice,
       quantity,
       image,

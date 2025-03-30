@@ -17,8 +17,8 @@ export default function CreatePost() {
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({
     ItemsN: "", // Product name
-    unitPrice: "", // Per unit price
-    packPrice: "", // Per pack price
+    unitPrice: "", // Optional - explicitly setting as empty string to start
+    packPrice: "", // Required
     quantity: "", // Quantity
     image: "", // Product image
     descrip: "", // Description
@@ -29,6 +29,7 @@ export default function CreatePost() {
   });
   const [publishError, setPublishError] = useState(null);
   const [validationError, setValidationError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -71,12 +72,41 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationError(null); // Clear previous errors
 
-    // Validation: Check if any required field is empty
-    const { ItemsN, unitPrice, packPrice, quantity, image, descrip, manufactureDate, expiryDate } = formData;
-    if (!ItemsN || !unitPrice || !packPrice || !quantity || !image || !descrip || !manufactureDate || !expiryDate) {
-      setValidationError("All fields are required");
+    // Validation: Check required fields (explicitly excluding unitPrice)
+    const { ItemsN, packPrice, quantity, descrip, manufactureDate, expiryDate, image } = formData;
+    
+    const requiredFields = [
+      { field: ItemsN, name: "Product name" },
+      { field: packPrice, name: "Pack price" },
+      { field: quantity, name: "Quantity" },
+      { field: descrip, name: "Description" },
+      { field: manufactureDate, name: "Manufacture date" },
+      { field: expiryDate, name: "Expiry date" }
+    ];
+    
+    // Check for any empty required fields
+    const missingFields = requiredFields.filter(item => !item.field);
+    if (missingFields.length > 0) {
+      setValidationError(`Missing required fields: ${missingFields.map(f => f.name).join(", ")}`);
       return;
+    }
+
+    // Validate pack price (mandatory)
+    const packPriceNum = parseFloat(packPrice);
+    if (isNaN(packPriceNum) || packPriceNum <= 0) {
+      setValidationError("Pack price must be a valid positive number");
+      return;
+    }
+
+    // Only validate unit price if a value is provided
+    if (formData.unitPrice) {
+      const unitPriceNum = parseFloat(formData.unitPrice);
+      if (isNaN(unitPriceNum) || unitPriceNum < 0) {
+        setValidationError("Unit price must be a valid non-negative number if provided");
+        return;
+      }
     }
 
     // Validate dates
@@ -93,11 +123,27 @@ export default function CreatePost() {
       return;
     }
 
+    // Check if image is uploaded
+    if (!image) {
+      setValidationError("Please upload a product image");
+      return;
+    }
+
     try {
-      const dataToSubmit = {
+      setLoading(true);
+      
+      // Create form data for submission
+      const submitData = {
         ...formData,
-        manufactureDate: mDate.toISOString(),
-        expiryDate: eDate.toISOString()
+        // Handle unit price - if empty string or undefined, set to null
+        unitPrice: formData.unitPrice ? parseFloat(formData.unitPrice) : null,
+        // Ensure packPrice is a number
+        packPrice: parseFloat(formData.packPrice),
+        // Ensure quantity is a number
+        quantity: parseInt(formData.quantity),
+        // Format dates
+        manufactureDate: mDate,
+        expiryDate: eDate
       };
 
       const res = await fetch("/api/items/create", {
@@ -105,22 +151,28 @@ export default function CreatePost() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSubmit),
+        body: JSON.stringify(submitData),
       });
+
       const data = await res.json();
+
       if (!res.ok) {
-        setPublishError(data.message);
+        setValidationError(data.message || "Failed to add product");
         return;
       }
 
-      if (res.ok) {
-        setPublishError(null);
-        alert("Product added successfully");
-        navigate("/inventory");
-      }
+      // Show success message
+      alert("Product added successfully!");
+      navigate("/inventory");
     } catch (error) {
-      setPublishError("Something went wrong");
+      setValidationError(error.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
@@ -135,113 +187,125 @@ export default function CreatePost() {
             Add New Product
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+          <div className="rounded-md shadow-sm space-y-4">
+            {/* Product Name */}
             <div>
-              <label htmlFor="product-name" className="sr-only">Product Name</label>
+              <label htmlFor="ItemsN" className="block text-gray-700 text-sm font-bold mb-2">
+                Product Name *
+              </label>
               <input
-                id="product-name"
-                name="product-name"
+                id="ItemsN"
+                name="ItemsN"
                 type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
-                placeholder="Product Name"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Enter product name"
                 value={formData.ItemsN}
-                onChange={(e) => setFormData({ ...formData, ItemsN: e.target.value })}
+                onChange={handleChange}
               />
             </div>
 
-            {/* Per Unit Price */}
+            {/* Unit Price - Optional */}
             <div>
-              <label htmlFor="unitPrice" className="sr-only">Per Unit Price</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Unit Price <span className="font-normal text-gray-500">(Optional)</span>
+              </label>
               <input
-                id="unitPrice"
+                type="number"
+                step="0.01"
+                min="0"
                 name="unitPrice"
-                type="number"
-                min="0"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
-                placeholder="Per Unit Price"
+                placeholder="Enter unit price (optional)"
                 value={formData.unitPrice}
-                onChange={(e) => setFormData({ ...formData, unitPrice: e.target.value })}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
+              <p className="text-xs text-gray-500 mt-1">This field is optional and can be left empty</p>
             </div>
 
-            {/* Per Pack Price */}
+            {/* Pack Price - Required */}
             <div>
-              <label htmlFor="packPrice" className="sr-only">Per Pack Price</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Pack Price *
+              </label>
               <input
-                id="packPrice"
-                name="packPrice"
                 type="number"
-                min="0"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
-                placeholder="Per Pack Price"
+                step="0.01"
+                min="0.01"
+                name="packPrice"
+                placeholder="Enter pack price"
                 value={formData.packPrice}
-                onChange={(e) => setFormData({ ...formData, packPrice: e.target.value })}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
 
+            {/* Quantity */}
             <div>
-              <label htmlFor="quantity" className="sr-only">Quantity</label>
+              <label htmlFor="quantity" className="block text-gray-700 text-sm font-bold mb-2">
+                Quantity *
+              </label>
               <input
                 id="quantity"
                 name="quantity"
                 type="number"
                 min="1"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
-                placeholder="Quantity"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Enter quantity"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={handleChange}
               />
             </div>
 
-            <div className="space-y-4 mt-4">
+            {/* Dates */}
+            <div className="space-y-4">
               <div>
-                <label htmlFor="manufactureDate" className="block text-sm font-medium text-gray-700">Manufacture Date</label>
+                <label htmlFor="manufactureDate" className="block text-sm font-bold text-gray-700">Manufacture Date *</label>
                 <input
                   type="date"
                   id="manufactureDate"
                   name="manufactureDate"
-                  required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
                   value={formData.manufactureDate}
-                  onChange={(e) => setFormData({ ...formData, manufactureDate: e.target.value })}
+                  onChange={handleChange}
                 />
               </div>
 
               <div>
-                <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                <label htmlFor="expiryDate" className="block text-sm font-bold text-gray-700">Expiry Date *</label>
                 <input
                   type="date"
                   id="expiryDate"
                   name="expiryDate"
-                  required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 sm:text-sm"
                   value={formData.expiryDate}
-                  onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
+            {/* Description */}
             <div>
-              <label htmlFor="description" className="sr-only">Description</label>
+              <label htmlFor="descrip" className="block text-gray-700 text-sm font-bold mb-2">
+                Description *
+              </label>
               <textarea
-                id="description"
-                name="description"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-600 focus:border-blue-600 focus:z-10 sm:text-sm"
-                placeholder="Description"
+                id="descrip"
+                name="descrip"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Enter product description"
                 rows="3"
                 value={formData.descrip}
-                onChange={(e) => setFormData({ ...formData, descrip: e.target.value })}
+                onChange={handleChange}
               ></textarea>
             </div>
           </div>
 
+          {/* Image Upload */}
           <div>
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Product Image *
+            </label>
             <div className="flex items-center justify-between">
               <input
                 type="file"
@@ -288,16 +352,33 @@ export default function CreatePost() {
             )}
           </div>
 
+          {/* Error Display */}
           {validationError && (
-            <p className="mt-2 text-sm text-red-600">{validationError}</p>
+            <div className="bg-red-50 border-l-4 border-red-500 p-4">
+              <p className="text-sm text-red-700">{validationError}</p>
+            </div>
           )}
 
+          {/* Submit Button */}
           <div>
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
+              disabled={loading}
             >
-              Add Product
+              {loading ? (
+                <CircularProgressbar
+                  value={100}
+                  text="Loading..."
+                  styles={{
+                    root: { width: '24px', height: '24px', marginRight: '8px' },
+                    path: { stroke: '#ffffff' },
+                    text: { fill: '#ffffff', fontSize: '24px' },
+                  }}
+                />
+              ) : (
+                <span>Add Product</span>
+              )}
             </button>
           </div>
 
