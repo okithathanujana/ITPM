@@ -54,6 +54,7 @@ const ProductListItem = ({ product, onEdit, onDelete, onSelect, isSelected }) =>
   );
 };
 
+
 export default function StoreM() {
   const [Info, setInfo] = useState([]);
   const [filter, setFilter] = useState([]);
