@@ -175,7 +175,7 @@ export default function Details() {
               </div>
 
               <div className="mt-6 flex items-center">
-                <span className="mr-3 text-gray-700 font-serif">Quantity:</span>
+                <span className="mr-3 text-gray-700 font-serif">Quantity :</span>
                 <div className="flex items-center border border-gray-300 rounded-md">
                   <button onClick={decrement} className="px-3 py-1 bg-blue-600 text-white rounded-l-md hover:bg-blue-700 transition-colors duration-200">
                     <FaMinus />
