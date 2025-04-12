@@ -164,7 +164,7 @@ export default function Details() {
                     </span>
                   </li>
                   <li className="flex items-center text-gray-600">
-                    <span className="font-semibold w-40">Expiry Date:</span>
+                    <span className="font-semibold w-40">Expiry Date: </span>
                     <span>
                       {formData.expiryDate 
                         ? new Date(formData.expiryDate).toLocaleDateString()
