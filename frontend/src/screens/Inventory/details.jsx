@@ -156,7 +156,7 @@ export default function Details() {
                 <h3 className="text-lg font-medium text-gray-700 mb-3">Product Information:</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center text-gray-600">
-                    <span className="font-semibold w-40">Manufacture Date:</span>
+                    <span className="font-semibold w-40">Manufacture Date: </span>
                     <span>
                       {formData.manufactureDate 
                         ? new Date(formData.manufactureDate).toLocaleDateString()
@@ -164,7 +164,7 @@ export default function Details() {
                     </span>
                   </li>
                   <li className="flex items-center text-gray-600">
-                    <span className="font-semibold w-40">ExpiryDate:</span>
+                    <span className="font-semibold w-40">Expiry Date :</span>
                     <span>
                       {formData.expiryDate 
                         ? new Date(formData.expiryDate).toLocaleDateString()
@@ -175,7 +175,7 @@ export default function Details() {
               </div>
 
               <div className="mt-6 flex items-center">
-                <span className="mr-3 text-gray-700 font-serif">Quantity:</span>
+                <span className="mr-3 text-gray-700 font-serif">Quantity: </span>
                 <div className="flex items-center border border-gray-300 rounded-md">
                   <button onClick={decrement} className="px-3 py-1 bg-blue-600 text-white rounded-l-md hover:bg-blue-700 transition-colors duration-200">
                     <FaMinus />
