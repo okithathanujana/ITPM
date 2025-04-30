@@ -1,2 +1,3 @@
 
 # Product_management-
+We are developing a high-end Pharmacy POS system with four primary functionalities: Product Management, Employee Management, User Management, and AI-powered Prescription Management. Product Management enables admins to add, edit, delete, and monitor medicines with real-time stock monitoring and reports. Employee Management handles employee information, roles, and access levels for secure working. User Management stores customer information effectively with registration, update, and user activity tracking support. The AI-powered Prescription Management feature allows customers to upload prescriptions, which are read by a chatbot to generate bills based on inventory. The customer can accept the bill and receive the confirmation via WhatsApp.
