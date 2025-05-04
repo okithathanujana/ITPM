@@ -153,10 +153,10 @@ export default function Details() {
 
               {/* Display Product Information */}
               <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-lg font-medium text-gray-700 mb-3">Product Information :</h3>
+                <h3 className="text-lg font-medium text-gray-700 mb-3">Product Information:</h3>
                 <ul className="space-y-3">
                   <li className="flex items-center text-gray-600">
-                    <span className="font-semibold w-40">Manufacture Date :</span>
+                    <span className="font-semibold w-40">Manufacture Date:</span>
                     <span>
                       {formData.manufactureDate 
                         ? new Date(formData.manufactureDate).toLocaleDateString()
@@ -164,7 +164,7 @@ export default function Details() {
                     </span>
                   </li>
                   <li className="flex items-center text-gray-600">
-                    <span className="font-semibold w-40">Expiry Date :</span>
+                    <span className="font-semibold w-40">Expiry Date:</span>
                     <span>
                       {formData.expiryDate 
                         ? new Date(formData.expiryDate).toLocaleDateString()
