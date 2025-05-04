@@ -124,7 +124,7 @@ export default function Details() {
 
               {/* Price option radio buttons */}
               <div className="mt-4">
-                <label className="text-gray-700 font-serif mr-4">Order In:</label>
+                <label className="text-gray-700 font-serif mr-4">Order In :</label>
                 <div className="mt-2">
                   <label className="block">
                     <input
